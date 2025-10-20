@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Triagem Médica</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">Logo</div>
+    <nav class="menu">
+      <a href="#">🏠 Início</a>
+      <a href="#">📝 Questionário</a>
+      <a href="#">📋 Lista</a>
+      <a href="#">📜 Histórico</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="busca">
+      <h2>Busca/Cadastro de Pacientes</h2>
+      <label for="cpf">CPF:</label>
+      <input type="text" id="cpf" placeholder="000.000.000-00">
+      <button type="button" class="btn cadastrar" onclick="window.location.href='tela3.html'"> Cadastrar </button>      
+    </section>
+
+    <section class="urgencia">
+      <h2>Ordem de Urgência</h2>
+      <div class="tabela-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th>N°</th>
+              <th>Prioridade</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Maria Silva</td>
+              <td>01</td>
+              <td><span class="prioridade emergencia">Emergência</span></td>
+            </tr>
+            <tr>
+              <td>João Souza</td>
+              <td>02</td>
+              <td><span class="prioridade pouco-urgente">Pouco Urgente</span></td>
+            </tr>
+            <tr>
+              <td>Carla Lima</td>
+              <td>03</td>
+              <td><span class="prioridade urgente">Urgente</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="btn-secundario">Lista de Pacientes</button>
+    </section>
+  </main>
+</body>
+</html>

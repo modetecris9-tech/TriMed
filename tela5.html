@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lista de Pacientes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">Logo</div>
+      <nav>
+        <ul>
+          <li><a href="#">🏠 Início</a></li>
+          <li><a href="#">📝 Questionário</a></li>
+          <li><a href="#">📋 Lista</a></li>
+          <li><a href="#">🕓 Histórico</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h2>Lista de Pacientes Cadastrados</h2>
+
+    <div class="lista-header">
+      <button class="btn add">+ Adicionar Paciente</button>
+      <select class="filtro">
+        <option>Filtro</option>
+      </select>
+    </div>
+
+    <table class="tabela">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>CPF</th>
+          <th>Número</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td colspan="4" style="text-align:center; color:#777;">(Nenhum paciente cadastrado)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="buttons">
+      <button class="btn voltar">Voltar</button>
+    </div>
+  </main>
+</body>
+</html>

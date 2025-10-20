@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cadastro do Paciente</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">Logo</div>
+      <nav>
+        <ul>
+          <li><a href="#">🏠 Início</a></li>
+          <li><a href="#">📝 Questionário</a></li>
+          <li><a href="#">📋 Lista</a></li>
+          <li><a href="#">🕓 Histórico</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h2>Cadastro do Paciente com CPF: XXX.XXX.XXX-XX</h2>
+
+    <form class="cadastro-form">
+      <div class="form-grid">
+
+        <div class="form-group">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" name="nome">
+        </div>
+
+        <div class="form-group">
+          <label for="sus">Nº SUS:</label>
+          <input type="text" id="sus" name="sus">
+        </div>
+
+        <div class="form-group">
+          <label for="genero">Gênero:</label>
+          <select id="genero" name="genero">
+            <option value="">Selecione</option>
+            <option value="masculino">Masculino</option>
+            <option value="feminino">Feminino</option>
+            <option value="outro">Outro</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="tipoSanguineo">Tipo sanguíneo:</label>
+          <select id="tipoSanguineo" name="tipoSanguineo">
+            <option value="">Selecione</option>
+            <option>A+</option><option>A-</option>
+            <option>B+</option><option>B-</option>
+            <option>AB+</option><option>AB-</option>
+            <option>O+</option><option>O-</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="altura">Altura (m):</label>
+          <input type="number" step="0.01" id="altura" name="altura">
+        </div>
+
+        <div class="form-group">
+          <label for="peso">Peso (kg):</label>
+          <input type="number" step="0.1" id="peso" name="peso">
+        </div>
+
+        <div class="form-group">
+          <label for="dataNascimento">Data de nascimento:</label>
+          <input type="date" id="dataNascimento" name="dataNascimento">
+        </div>
+
+        <div class="form-group">
+          <label for="cep">CEP:</label>
+          <input type="text" id="cep" name="cep">
+        </div>
+
+        <div class="form-group">
+          <label for="bairro">Bairro:</label>
+          <input type="text" id="bairro" name="bairro">
+        </div>
+
+        <div class="form-group">
+          <label for="rua">Rua:</label>
+          <input type="text" id="rua" name="rua">
+        </div>
+      </div>
+
+      <div class="buttons">
+        <button type="submit" class="btn cadastrar">Cadastrar</button>
+        <button type="button" class="btn voltar">Voltar</button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>

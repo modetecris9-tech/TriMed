@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Questionário</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <div class="logo">Logo</div>
+      <nav>
+        <ul>
+          <li><a href="#">🏠 Início</a></li>
+          <li><a href="#">📝 Questionário</a></li>
+          <li><a href="#">📋 Lista</a></li>
+          <li><a href="#">🕓 Histórico</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <h2>Questionário - Xxx Xxx xx Xxx</h2>
+    <p><strong>CPF:</strong> XXX.XXX.XXX-XX</p>
+    <p><strong>Idade:</strong> XX</p>
+
+    <form class="questionario-form">
+      <div class="checkboxes">
+        <label><input type="checkbox"> Fumante</label>
+        <label><input type="checkbox"> Hipertenso(a)</label>
+        <label><input type="checkbox"> Diabético(a)</label>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label>Faz uso de medicamentos?</label>
+          <input type="text" placeholder="Se sim, descreva">
+        </div>
+
+        <div class="form-group">
+          <label>Possui alergias?</label>
+          <input type="text" placeholder="Se sim, quais">
+        </div>
+
+        <div class="form-group">
+          <label>Possui histórico de doenças?</label>
+          <input type="text" placeholder="Se sim, descreva">
+        </div>
+
+        <div class="form-group">
+          <label>Pressão:</label>
+          <input type="text">
+        </div>
+      </div>
+
+      <div class="form-group observacoes">
+        <label>Observações</label>
+        <textarea rows="5"></textarea>
+      </div>
+
+      <div class="buttons">
+        <button type="submit" class="btn cadastrar">Salvar</button>
+        <button type="button" class="btn voltar">Voltar</button>
+      </div>
+    </form>
+  </main>
+</body>
+</html>
