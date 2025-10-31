@@ -92,7 +92,7 @@ def index():
         cpf_raw = request.form.get('cpf','').strip()
         cpf = clean_cpf(cpf_raw)
         if not validar_cpf(cpf):
-            flash('CPF inválido.', 'Erro:')
+            flash('CPF inválido.', 'Erro')
             return redirect(url_for('index'))
         # aceitar qualquer CPF numérico para testes
         return redirect(url_for('paciente', cpf=cpf))

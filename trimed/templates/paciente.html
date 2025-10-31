@@ -3,8 +3,22 @@
   <head>
     <meta charset="UTF-8">
     <title>Paciente {{ dados.nome if dados else cpf }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
   </head>
   <body>
+
+    <header>
+      <div class="cabecalho">
+        <div class="logo">Logo</div>
+        <nav class="menu">
+          <ul>
+            <li><a href="{{ url_for('index') }}"><i class="material-icons">home</i> Início</a></li>
+            <li><a href="{{ url_for('lista') }}"><i class="material-icons">list_alt</i> Lista</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
 
     {% with messages = get_flashed_messages(with_categories=True) %}
       {% if messages %}
@@ -16,85 +30,103 @@
       {% endif %}
     {% endwith %}
 
-    <h2>Cadastro do Paciente:{{ dados.nome if dados else "Novo" }}</h2>
+    <main class="conteudo">
+      <h2>Cadastro do Paciente: {{ dados.nome if dados else "Novo" }}</h2>
+      <form class="cadastro" method="post">
+        <h2><strong>CPF:</strong> {{ cpf|format_cpf }}</h2>
 
-    <form method="post">
-      <p><strong>CPF:</strong> {{ cpf|format_cpf }}</p>
+        <div class="linha">
+          <div class="campo">
+            <label class="item" for="sus">Nº Cartão SUS:</label><br>
+            {% if dados %}
+              <input type="text" name="sus" id="sus" value="{{ dados.sus }}" readonly class="readonly"><br><br>
+            {% else %}
+              <input type="text" name="sus" id="sus" value="" ><br><br>
+            {% endif %}
+          </div>
+          
+          <div class="campo">
+            <label class="item" for="nome">Nome:</label><br>
+            {% if dados %}
+              <input type="text" name="nome" id="nome" value="{{ dados.nome }}" readonly class="readonly" required><br><br>
+            {% else %}
+              <input type="text" name="nome" id="nome" value="" required><br><br>
+            {% endif %}
+          </div>
+        </div>  
 
-      <label for="sus">Nº Cartão SUS:</label><br>
-      {% if dados %}
-        <input type="text" name="sus" id="sus" value="{{ dados.sus }}" readonly class="readonly"><br><br>
-      {% else %}
-        <input type="text" name="sus" id="sus" value="" ><br><br>
+        <div class="linha">
+          <div class="campo">
+            <label class="item" for="genero">Gênero:</label><br>
+            <select class="grupo" name="genero" id="genero">
+              <option class="item-grupo" value="">-- selecione --</option>
+              <option value="Masculino" {% if dados and dados.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
+              <option value="Feminino" {% if dados and dados.genero == 'Feminino' %}selected{% endif %}>Feminino</option>
+              <option value="Outro" {% if dados and dados.genero == 'Outro' %}selected{% endif %}>Outro</option>
+            </select><br><br>
+          </div>
+
+          <div class="campo">
+            <label class="item" for="altura">Altura (cm):</label><br>
+            <input type="text" name="altura" id="altura" value="{{ dados.altura if dados else '' }}" required><br><br>
+          </div>
+
+        </div class="linha">
+          <div class="campo">
+            <label class="item" for="peso">Peso (kg):</label><br>
+            <input type="text" name="peso" id="peso" value="{{ dados.peso if dados else '' }}" required><br><br>
+          </div>
+          <div class="campo">
+            <label class="item" for="tipo_sanguineo">Tipo sanguíneo:</label><br>
+            {% set tipos = ['A+','A-','B+','B-','AB+','AB-','O+','O-', 'Não identificado'] %}
+            {% if dados %}
+              <select class="grupo" id="tipo_sanguineo_display" disabled class="readonly" required>
+                <option class="item-grupo">{{ dados.tipo_sanguineo }}</option>
+              </select>
+              <input type="hidden" name="tipo_sanguineo" value="{{ dados.tipo_sanguineo }}" required><br><br>
+            {% else %}
+              <select class="grupo"name="tipo_sanguineo" id="tipo_sanguineo" required>
+                <option class="item-grupo" value="">-- selecione --</option>
+                {% for t in tipos %}
+                  <option value="{{ t }}">{{ t }}</option>
+                {% endfor %}
+              </select><br><br>
+            {% endif %}
+          </div>
+        </div>
+
+        <label class="item" for="data_nascimento">Data de nascimento:</label><br>
+        {% if dados %}
+          <input type="date" name="data_nascimento" id="data_nascimento" value="{{ dados.data_nascimento }}" readonly class="readonly" required><br><br>
+        {% else %}
+          <input type="date" name="data_nascimento" id="data_nascimento" value="" required><br><br>
+        {% endif %}
+
+        <label class="item" for="cep">CEP:</label><br>
+        <input type="text" name="cep" id="cep" value="{{ dados.cep if dados else '' }}" required><br><br>
+
+        <label class="item" for="bairro">Bairro:</label><br>
+        <input type="text" name="bairro" id="bairro" value="{{ dados.bairro if dados else '' }}" required><br><br>
+
+        <label class="item" for="rua">Rua:</label><br>
+        <input type="text" name="rua" id="rua" value="{{ dados.rua if dados else '' }}" required><br><br>
+      {% if imc %}
+      <div>
+          <h3>Resultado do IMC</h3>
+          <p><strong>IMC:</strong> {{ imc }}</p>
+          <p><strong>Classificação:</strong> {{ classificacao }}</p>
+      </div>
       {% endif %}
+        <button class="botao" type="submit">{{ 'Salvar Alterações' if dados else 'Cadastrar' }}</button>
 
-      <label for="nome">Nome:</label><br>
-      {% if dados %}
-        <input type="text" name="nome" id="nome" value="{{ dados.nome }}" readonly class="readonly" required><br><br>
-      {% else %}
-        <input type="text" name="nome" id="nome" value="" required><br><br>
-      {% endif %}
-
-      <label for="genero">Gênero:</label><br>
-      <select name="genero" id="genero">
-      <option value="">-- selecione --</option>
-        <option value="Masculino" {% if dados and dados.genero == 'Masculino' %}selected{% endif %}>Masculino</option>
-        <option value="Feminino" {% if dados and dados.genero == 'Feminino' %}selected{% endif %}>Feminino</option>
-        <option value="Outro" {% if dados and dados.genero == 'Outro' %}selected{% endif %}>Outro</option>
-      </select><br><br>
-
-
-      <label for="altura">Altura (cm):</label><br>
-      <input type="text" name="altura" id="altura" value="{{ dados.altura if dados else '' }}" required><br><br>
-
-      <label for="peso">Peso (kg):</label><br>
-      <input type="text" name="peso" id="peso" value="{{ dados.peso if dados else '' }}" required><br><br>
-      <label for="tipo_sanguineo">Tipo sanguíneo:</label><br>
-      {% set tipos = ['A+','A-','B+','B-','AB+','AB-','O+','O-', 'Não identificado'] %}
-      {% if dados %}
-        <select id="tipo_sanguineo_display" disabled class="readonly" required>
-          <option>{{ dados.tipo_sanguineo }}</option>
-        </select>
-        <input type="hidden" name="tipo_sanguineo" value="{{ dados.tipo_sanguineo }}" required><br><br>
-      {% else %}
-        <select name="tipo_sanguineo" id="tipo_sanguineo" required>
-          <option value="">-- selecione --</option>
-          {% for t in tipos %}
-            <option value="{{ t }}">{{ t }}</option>
-          {% endfor %}
-        </select><br><br>
-      {% endif %}
-
-      <label for="data_nascimento">Data de nascimento:</label><br>
-      {% if dados %}
-        <input type="date" name="data_nascimento" id="data_nascimento" value="{{ dados.data_nascimento }}" readonly class="readonly" required><br><br>
-      {% else %}
-        <input type="date" name="data_nascimento" id="data_nascimento" value="" required><br><br>
-      {% endif %}
-
-      <label for="cep">CEP:</label><br>
-      <input type="text" name="cep" id="cep" value="{{ dados.cep if dados else '' }}" required><br><br>
-
-      <label for="bairro">Bairro:</label><br>
-      <input type="text" name="bairro" id="bairro" value="{{ dados.bairro if dados else '' }}" required><br><br>
-
-      <label for="rua">Rua:</label><br>
-      <input type="text" name="rua" id="rua" value="{{ dados.rua if dados else '' }}" required><br><br>
-    {% if imc %}
-    <div>
-        <h3>Resultado do IMC</h3>
-        <p><strong>IMC:</strong> {{ imc }}</p>
-        <p><strong>Classificação:</strong> {{ classificacao }}</p>
-    </div>
-    {% endif %}
-      <button type="submit">{{ 'Salvar Alterações' if dados else 'Cadastrar' }}</button>
-    </form>
-
-    <p><a href="{{ url_for('index') }}">Voltar ao início</a></p>
-    <p><a href="{{ url_for('lista') }}">Lista de pacientes</a></p>
-    {% if dados %}
-    <a href="{{ url_for('questionario', cpf=dados.cpf) }}">Questionário de Saúde</a>
-    {% endif %}
-
-  </body>
+      </form>
+      <div class="fim">
+        <p><a href="{{ url_for('index') }}" class="botao">Voltar ao início</a></p>
+        <p><a href="{{ url_for('lista') }}" class="botao">Lista de pacientes</a></p>
+        {% if dados %}
+        <a href="{{ url_for('questionario', cpf=dados.cpf) }}" class="botao">Questionário de Saúde</a>
+        {% endif %}
+      </div>
+    </main>
+</body>
 </html>
