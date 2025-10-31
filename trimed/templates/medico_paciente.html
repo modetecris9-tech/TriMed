@@ -1,0 +1,95 @@
+<!-- esse template mostra a ficha médica de um paciente específico, nele o médico pode escrever ou 
+editar a receita e o atestado do paciente,
+e salvar essas informações temporariamente no sistema
+funciona tipo como o consultório do médico, onde o atendimento realmente acontece
+-->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Ficha Médica</title>
+</head>
+<body>
+    <h1>Ficha médica de {{ paciente.nome }}</h1>
+
+    <form method="POST">
+        <h3>Medicamentos</h3>
+        <div id="medicamentos-container">
+        <!-- Campos existentes -->
+        {% for med in dados.medicamentos %}
+            <div class="medicamento">
+            <input type="text" name="medicamentos_nome" placeholder="Nome do medicamento" value="{{ med.nome }}">
+            <input type="text" name="medicamentos_dosagem" placeholder="Dosagem" value="{{ med.dosagem }}">
+            <input type="text" name="medicamentos_quantidade" placeholder="Quantidade" value="{{ med.quantidade }}">
+            <button type="button" onclick="removerMedicamento(this)">Remover</button>
+            </div>
+        {% endfor %}
+        </div>
+        <button type="button" onclick="adicionarMedicamento()">Adicionar medicamento</button>
+
+        <script>
+        function adicionarMedicamento() {
+            const container = document.getElementById("medicamentos-container");
+            const div = document.createElement("div");
+            div.className = "medicamento";
+            div.innerHTML = `
+            <input type="text" name="medicamentos_nome" placeholder="Nome do medicamento">
+            <input type="text" name="medicamentos_dosagem" placeholder="Dosagem">
+            <input type="text" name="medicamentos_quantidade" placeholder="Quantidade">
+            <button type="button" onclick="removerMedicamento(this)">Remover</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removerMedicamento(botao) {
+            botao.parentElement.remove();
+        }
+        </script>
+
+        <label>Observações:</label><br>
+        <textarea name="observacoes" rows="3" cols="60">{{ dados.observacoes or '' }}</textarea><br><br>
+
+        <h3>Atestado Médico</h3>
+        <label>Doença:</label><br>
+        <input type="text" name="doenca" value="{{ dados.doenca or '' }}"><br><br>
+
+        <label>Horário da consulta:</label><br>
+        <input type="text" name="horario" value="{{ dados.horario or '' }}"><br><br>
+
+        <label>CID-10:</label><br>
+        <input type="text" name="cid" value="{{ dados.cid or '' }}"><br><br>
+
+        <label>Dias de afastamento:</label><br>
+        <input type="number" name="dias_afastamento" value="{{ dados.dias_afastamento or '' }}"><br><br>
+
+        <label>Cidade:</label><br>
+        <input type="text" name="cidade" value="{{ dados.cidade or '' }}"><br><br>
+
+        <label>Nome do Médico:</label><br>
+        <input type="text" name="nome_medico" value="{{ dados.nome_medico or '' }}" required><br><br>
+
+        <label>CRM do Médico:</label><br>
+        <input type="text" name="crm" value="{{ dados.crm or '' }}"><br><br>
+
+        <label>Hospital:</label><br>
+        <input type="text" name="hospital" value="{{ dados.hospital or '' }}" required><br><br>
+
+        <button type="submit">Salvar alterações</button>
+    </form>
+
+    {% if dados.ultima_edicao %}
+        <p><em>Última edição: {{ dados.ultima_edicao }}</em></p>
+    {% endif %}
+
+    {% if dados.medicamentos %}
+    <a href="{{ url_for('gerar_receita_pdf', cpf=cpf) }}" class="btn btn-primary">Baixar Receita PDF</a>
+    {% endif %}
+
+    {% if dados.doenca %}
+    <a href="{{ url_for('gerar_atestado_pdf', cpf=cpf) }}" class="btn btn-primary">Baixar Atestado PDF</a>
+    {% endif %}
+
+    <a href="{{ url_for('medico_lista') }}">Voltar à lista de pacientes</a>
+</body>
+</html>

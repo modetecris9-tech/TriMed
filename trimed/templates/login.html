@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Login - Triagem</title>
+	<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+</head>
+<body>
+	<div>
+		<h2>Entrar</h2>
+
+		{% with mensagens = get_flashed_messages(with_categories=True) %}
+			{% if mensagens %}
+			<ul class="flashes">
+				{% for categoria, msg in mensagens %}
+					<li class="flash {{ categoria }}">{{ msg }}</li>
+				{% endfor %}
+			</ul>
+			{% endif %}
+		{% endwith %}
+
+		<form method="post" novalidate>
+			<label for="cpf">CPF</label>
+			<input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="11" inputmode="numeric" title="Digite o CPF">
+
+			<label for="senha">Senha</label>
+			<input id="senha" name="senha" type="password" placeholder="Senha" required>
+
+			<button type="submit">Entrar</button>
+		</form>
+	</div>
+</body>
+</html>

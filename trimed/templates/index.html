@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+  <head>
+    <meta charset="UTF-8">
+    <title>Busca/Cadastro de Paciente</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body>
+
+    <header>
+      <div class="cabecalho">
+        <div class="logo">Logo</div>
+        <nav class="menu">
+          <ul>
+            <li><a href="{{ url_for('index') }}"><i class="material-icons">home</i> Início</a></li>
+            <li><a href="{{ url_for('lista') }}"><i class="material-icons">list_alt</i> Lista</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    {% with mensagens = get_flashed_messages(with_categories=True) %}
+      {% if mensagens %}
+      <div class="rotas">
+        <ul class="flashes">
+          {% for categoria, msg in mensagens %}
+            <li class="flash {{ categoria }}"><strong>{{ categoria }}:</strong> {{ msg }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    {% endwith %}
+
+  <main class ="conteudo">
+    
+    <div class ="registro">
+      <h3>Busca/Cadastro de Paciente</h3>
+      <form method="post" novalidate>
+        <div class="bloco-cpf">
+          <label for="cpf">CPF:</label>
+          <input type="text" name="cpf" id="cpf" required maxlength="14" placeholder="000.000.000-00" pattern="[\d\.\-]+" autofocus>
+        </div>
+        <div class="bloco-botao">
+          <button type="submit" class="botao">Buscar/Cadastrar</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="lista-urgencia">
+      {% if triagem %}
+        <h3>Ordem de Atendimento</h3>
+        <div class="tabela">
+          <table>
+            <thead>
+              <tr>
+                <th>CPF</th>
+                <th>Nome</th>
+                <th>Prioridade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in triagem %}
+                <tr>
+                  <td>{{ p.cpf }}</td>
+                  <td>{{ p.nome }}</td>
+                  <td class="prioridade prioridade-{{ p.prioridade|lower|replace(' ', '-') }}">{{ p.prioridade }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        {% else %}
+          <p>Nenhum paciente em triagem no momento.</p>
+        {% endif %}
+        </div>
+    </div>
+
+    <div class="fim">
+      <p>Usuário logado: {{ usuario | format_cpf}}</p>
+      <a href="{{ url_for('logout') }}" class="botao">Sair</a>
+      <a href="{{ url_for('lista') }}" class="botao">Lista de Pacientes</a>
+    </div>
+
+</body>
+</html>

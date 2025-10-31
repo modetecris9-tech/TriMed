@@ -1,0 +1,278 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* tela busca/cadastro */
+/* cabeçalho e menu de navegação */
+
+.cabecalho {
+  background-color: #7bb6a4;
+  padding: 20px 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  background-color: #fff;
+  color: #7bb6a4;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.menu ul {
+  list-style: none;
+  display: flex;
+  gap: 40px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.menu img.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  object-fit: contain;
+}
+
+.material-icons {
+  font-size: 20px;
+  margin-right: 8px;
+}
+
+/* mensagens flash */
+
+.flashes { 
+  list-style: none; 
+  padding:0; 
+  margin:8px 0; 
+}
+
+.flashes .flash { 
+  padding: 8px; 
+  border-radius: 4px; 
+  margin: 6px 0; 
+}
+
+.flashes .Erro { 
+  background:#fff3cd; 
+  border:1px solid #ffeeba; 
+}
+
+.flashes .success { 
+  background:#d4edda; 
+  border:1px solid #c3e6cb; 
+}
+
+.readonly { 
+  background: #eee; border: 1px solid #ccc; 
+}
+
+.flashes .info { 
+  background:#d1ecf1; border:1px solid #bee5eb; 
+}
+.immutable-note { 
+  color: #666; font-size: 0.85em;
+}
+
+/* formulário de triagem */
+.conteudo {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+.registro {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;  
+}
+
+.registro h3 {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #222;
+}
+
+.bloco-cpf {
+  display: flex;
+  margin-left: 265px;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.bloco-cpf label {
+  color: #3d8275;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.bloco-cpf input {
+  padding: 8px 10px;
+  border: 2px solid #7bb6a4;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+  width: 200px;
+}
+
+.bloco-cpf input:hover {
+  opacity: 0.9;
+}
+
+.bloco-botao {
+  display: flex;
+  justify-content: center;
+}
+
+.botao {
+  background-color: #7bb6a4;
+  color: #fff;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease-in-out;
+}
+
+.botao:hover {
+  opacity: 0.9;
+}
+
+/* tabela de ordem de urgência */
+
+.lista-urgencia {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.lista-urgencia h3 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #222;
+}
+
+.tabela {
+  overflow-x: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #b8d1c9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 12px;
+  text-align: center;
+}
+
+th {
+  background-color: #f0f4f3;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* estilos para prioridade (células) */
+.prioridade {
+  font-weight: 700;
+  padding: 12px 5px;
+  margin: 12px 12px;
+  border-radius: 15px;
+  display: flex;
+  min-width: 120px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* mapas de prioridade — ajuste os nomes conforme os valores reais em p.prioridade */
+.prioridade-urgente { background: #faf9be; color: #D1CD00; }
+.prioridade-emergencia { background: #F9C3C3; color: #FF0000}
+.prioridade-pouco-urgente { background: #B0CAA9; color: #28980A; }
+.prioridade-muito-urgente { background: #ff950a; }
+.prioridade-não-urgente { background: #a6f3ff; color:#17a2b8; }
+
+/* fim */
+
+.fim {
+  display:flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 40px;
+}
+
+a {
+  text-decoration: none;
+}
+
+/* tela paciente */
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #333;
+  text-align: center;
+}
+
+/* ===== Formulário de Cadastro ===== */
+.cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 40px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #3d8275;
+}
+
+input, select {
+  padding: 8px 10px;
+  border: 1px solid #bcbcbc;
+  border-radius: 6px;
+  font-size: 14px;
+}

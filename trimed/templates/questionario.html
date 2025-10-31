@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Questionário de Saúde - {{ paciente.nome }}</title>
+
+</head>
+<body>
+<h1>Questionário — {{ paciente.nome if paciente and paciente.nome else 'Paciente (sem CPF)' }}</h1>
+<p><strong>CPF:</strong> {{ cpf|format_cpf }}</p>
+{% if paciente and paciente.data_nascimento %}
+<p><strong>Idade:</strong> {{ idade }} anos</p>
+{% endif %}
+<hr>
+
+<form method="post">
+  {% if cpf and cpf.startswith('cpf temporario-') %}
+  <div class="field">
+    <label>Nome do paciente:</label><br>
+    <input type="text" name="nome_temp" value="{{ paciente.nome if paciente and paciente.nome else '' }}" required>
+  </div>
+
+  <div class="field">
+    <label>Idade (anos):</label><br>
+    <input type="number" name="idade_temp" min="0" max="130" value="{{ paciente.idade if paciente and paciente.idade is not none else '' }}">
+  </div>
+  {% endif %}
+
+  <div class="field">
+    <label><input type="checkbox" name="fumante" {% if dados and dados.fumante %}checked{% endif %}> Fumante</label>
+    <label><input type="checkbox" name="alcoolatra" {% if dados and dados.alcoolatra %}checked{% endif %}> Alcoólatra</label>
+    <label><input type="checkbox" name="diabetico" {% if dados and dados.diabetico %}checked{% endif %}> Diabético</label>
+    <label><input type="checkbox" name="hipertenso" {% if dados and dados.hipertenso %}checked{% endif %}> Hipertenso</label>
+  </div>
+
+  <div class="field">
+    <p>Faz uso de medicamentos?</p>
+    <input type="radio" id="medicamento_sim" name="medicamento_bool" value="sim" {% if dados and dados.medicamento_bool=='sim' %}checked{% endif %}>
+    <label for="medicamento_sim">Sim</label>
+
+    <input type="radio" id="medicamento_nao" name="medicamento_bool" value="nao" {% if not dados or dados.medicamento_bool!='sim' %}checked{% endif %}>
+    <label for="medicamento_nao">Não</label>
+
+    <div class="medicamento-detalhe">
+      <input type="text" name="medicamentos" placeholder="Descreva os medicamentos" value="{{ dados.medicamentos if dados else '' }}">
+    </div>
+  </div>
+
+  <div class="field">
+    <p>Possui alergia a medicamento?</p>
+    <input type="radio" id="alergia_sim" name="alergia_bool" value="sim" {% if dados and dados.alergia_bool=='sim' %}checked{% endif %}>
+    <label for="alergia_sim">Sim</label>
+
+    <input type="radio" id="alergia_nao" name="alergia_bool" value="nao" {% if not dados or dados.alergia_bool!='sim' %}checked{% endif %}>
+    <label for="alergia_nao">Não</label>
+
+    <div class="alergia-detalhe">
+      <input type="text" name="alergias" placeholder="Informe aqui" value="{{ dados.alergias if dados else '' }}">
+    </div>
+  </div>
+
+  <div class="field">
+    <p>Possui histórico de doenças ou doenças crônicas?</p>
+    <input type="radio" id="historico_sim" name="historico_bool" value="sim" {% if dados and dados.historico_bool=='sim' %}checked{% endif %}>
+    <label for="historico_sim">Sim</label>
+
+    <input type="radio" id="historico_nao" name="historico_bool" value="nao" {% if not dados or dados.historico_bool!='sim' %}checked{% endif %}>
+    <label for="historico_nao">Não</label>
+
+    <div class="historico-detalhe">
+      <input type="text" name="historico_doencas" placeholder="Descreva o histórico" value="{{ dados.historico_doencas if dados else '' }}">
+    </div>
+  </div>
+
+  <div class="field">
+    <label>Pressão (texto ou ex: 120/80):</label><br>
+    
+    <input type="text" name="pressao" value="{{ dados.pressao if dados else '' }}">
+  </div>
+
+  <div class="field">
+    <label>Temperatura (°C):</label><br>
+    <input type="number" name="temperatura" step="0.1" min="35" max="42" 
+           value="{{ dados.temperatura if dados else '' }}" 
+           placeholder="36.5">
+  </div>
+
+  {% if cpf.startswith('cpf temporario-') %}
+    <div class="field">
+      <label>Altura (cm):</label><br>
+      <input type="number" name="altura" step="0.1" value="{{ paciente.altura if paciente and paciente.altura else '' }}" required>
+    </div>
+
+    <div class="field">
+      <label>Peso (kg):</label><br>
+      <input type="number" name="peso" step="0.1" value="{{ paciente.peso if paciente and paciente.peso else '' }}" required>
+    </div>
+  {% endif %}
+
+  <div class="field">
+    <label>Observações:</label><br>
+    <textarea name="observacoes" rows="3" >{{ dados.observacoes if dados else '' }}</textarea>
+  </div>
+
+  <div class="field">
+    <label>Prioridade automática:</label>
+    <input type="text" value="{{ dados.prioridade_auto if dados else '—' }}" readonly>
+  </div>
+
+  <div class="field">
+    <label>Editar prioridade (opcional):</label>
+    <select name="prioridade_manual">
+      <option value="">Manter automática</option>
+      <option value="Emergencia" {% if dados and dados.prioridade == 'Emergencia' %}selected{% endif %}>Emergência</option>
+      <option value="Muito Urgente" {% if dados and dados.prioridade == 'Muito Urgente' %}selected{% endif %}>Muito Urgente</option>
+      <option value="urgente" {% if dados and dados.prioridade == 'urgente' %}selected{% endif %}>Urgente</option>
+      <option value="Pouco Urgente" {% if dados and dados.prioridade == 'Pouco Urgente' %}selected{% endif %}>Pouco Urgente</option>
+      <option value="Não Urgente" {% if dados and dados.prioridade == 'Não Urgente' %}selected{% endif %}>Não Urgente</option>
+
+    </select>
+  </div>
+
+  <button type="submit">Salvar</button>
+</form>
+
+{% with mensagens = get_flashed_messages(with_categories=True) %}
+  {% if mensagens %}
+    <ul class="flashes">
+    {% for categoria, msg in mensagens %}
+      <li><strong>{{ categoria }}:</strong> {{ msg }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+{% if cpf and not cpf.startswith('cpf temporario-') %}
+<p><a href="{{ url_for('paciente', cpf=cpf) }}">Voltar ao paciente</a></p>
+{% endif %}
+<p><a href="{{ url_for('index', cpf=cpf) }}">Voltar a página inicial</a></p>
+
+</body>
+</html>
