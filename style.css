@@ -1,225 +1,485 @@
 /* ===== Reset e Base ===== */
+/* tela 2 */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-  }
-  
-  body {
-    margin: 0;
-    background-color: #f5f5f5;
-    color: #333;
-  }
-  
-  /* ===== Cabeçalho ===== */
-  header, .navbar {
-    background-color: #7bb6a4;
-    padding: 10px 30px;
-  }
-  
-  .header-content,
-  .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1100px;
-    margin: 0 auto;
-  }
-  
-  .logo {
-    background-color: #fff;
-    color: #7bb6a4;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-  }
-  
-  nav ul, .menu {
-    list-style: none;
-    display: flex;
-    gap: 30px;
-    margin: 0;
-    padding: 0;
-  }
-  
-  nav a, .menu a {
-    text-decoration: none;
-    color: #fff;
-    font-weight: 500;
-  }
-  
-  .menu a:hover, nav a:hover {
-    text-decoration: underline;
-  }
-  
-  /* ===== Conteúdo Principal ===== */
-  main, .container {
-    max-width: 900px;
-    margin: 40px auto;
-    background-color: #fff;
-    padding: 30px 50px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  h2 {
-    font-size: 18px;
-    margin-bottom: 25px;
-    color: #333;
-    text-align: center;
-  }
-  
-  /* ===== Formulários ===== */
-  .cadastro-form, .questionario-form {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-  
-  .form-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 18px 40px;
-  }
-  
-  .form-group {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  label {
-    font-weight: 500;
-    margin-bottom: 5px;
-    color: #3d8275;
-  }
-  
-  input, select, textarea {
-    padding: 8px 10px;
-    border: 1px solid #bcbcbc;
-    border-radius: 6px;
-    font-size: 14px;
-  }
-  
-  textarea {
-    resize: none;
-  }
-  
-  /* ===== Checkboxes ===== */
-  .checkboxes {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    margin-bottom: 20px;
-  }
-  
-  .checkboxes label {
-    font-weight: 500;
-    color: #333;
-  }
-  
-  /* ===== Botões ===== */
-  .buttons {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 20px;
-  }
-  
-  .btn {
-    padding: 10px 40px;
-    border: none;
-    border-radius: 6px;
-    font-size: 15px;
-    cursor: pointer;
-    transition: 0.2s;
-    text-decoration: none;
-    text-align: center;
-  }
-  
-  .cadastrar, .add, .btn-principal, .btn-secundario {
-    background-color: #7bb6a4;
-    color: #fff;
-  }
-  
-  .voltar {
-    background-color: #c3d6d0;
-    color: #333;
-  }
-  
-  .btn:hover {
-    opacity: 0.9;
-  }
-  
-  /* ===== Seções Específicas ===== */
-  .busca, .urgencia {
-    background-color: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    text-align: center;
-    margin-bottom: 30px;
-  }
-  
-  .busca h2, .urgencia h2 {
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* ===== Tabelas ===== */
-  .tabela-container {
-    overflow-x: auto;
-  }
-  
-  .tabela, table {
-    width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    overflow: hidden;
-    margin-bottom: 20px;
-  }
-  
-  .tabela th, .tabela td, th, td {
-    border-bottom: 1px solid #ddd;
-    text-align: left;
-    padding: 10px 12px;
-  }
-  
-  .tabela th, th {
-    background-color: #f0f4f3;
-    font-weight: 600;
-  }
-  
-  .tabela td i {
-    cursor: pointer;
-    margin-right: 10px;
-    color: #7bb6a4;
-  }
-  
-  /* ===== Etiquetas de Prioridade ===== */
-  .prioridade {
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-weight: 600;
-  }
-  
-  .emergencia {
-    background-color: #ffcccc;
-    color: #c80000;
-  }
-  
-  .urgente {
-    background-color: #fff7c2;
-    color: #c29500;
-  }
-  
-  .pouco-urgente {
-    background-color: #e8ffd6;
-    color: #6b8a00;
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* ===== Cabeçalho e Barra de Navegação ===== */
+.navbar {
+  background-color: #7bb6a4;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  background-color: #fff;
+  color: #7bb6a4;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.menu ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+.menu img.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  object-fit: contain;
+}
+
+/* ===== Conteúdo Principal ===== */
+.conteudo {
+  max-width: 900px;
+  margin: 40px auto;
+}
+
+/* ===== Seção de Busca ===== */
+.busca {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.busca h3 {
+  margin-bottom: 20px;
+  font-size: 16px;
+  color: #222;
+}
+
+.cpf-container {
+  display: flex;
+  margin-left: 212px;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.cpf-container label {
+  color: #3d8275;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.cpf-container input {
+  padding: 8px 10px;
+  border: 2px solid #7bb6a4;
+  border-radius: 6px;
+  font-size: 14px;
+  text-align: center;
+  width: 200px;
+}
+
+/* Centralização do botão */
+.btn-container {
+  display: flex;
+  justify-content: center;
+}
+
+.btn {
+  background-color: #7bb6a4;
+  color: #fff;
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: 0.2s ease-in-out;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+/* ===== Seção de Urgência ===== */
+.urgencia {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.urgencia h3 {
+  margin-bottom: 15px;
+  font-size: 16px;
+  color: #222;
+}
+
+.tabela-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #b8d1c9;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+th, td {
+  border-bottom: 1px solid #ddd;
+  padding: 10px 12px;
+}
+
+th {
+  background-color: #f0f4f3;
+  font-weight: 600;
+}
+
+.alinhamento-direita {
+  text-align: right;
+}
+
+.alinhamento-centro {
+  text-align: center;
+}
+
+.prioridade {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.emergencia {
+  background-color: #ffcccc;
+  color: #c80000;
+}
+
+.urgente {
+  background-color: #fff7c2;
+  color: #c29500;
+}
+
+.pouco-urgente {
+  background-color: #e8ffd6;
+  color: #6b8a00;
+}
+
+/* Botão da tabela */
+.btn-secundario {
+  background-color: #7bb6a4;
+  color: #fff;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.btn-secundario:hover {
+  opacity: 0.9;
+}
+
+/* ===== Estilização da Barra de Pesquisa ===== */
+.search-bar {
+  display: flex;
+  margin-bottom: 15px;
+}
+
+.search-bar input {
+  flex: 1; /* Ocupa todo o espaço disponível */
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+}
+
+.search-bar button {
+  background-color: #f0f4f3;
+  border: 1px solid #ddd;
+  border-left: none;
+  border-radius: 0 6px 6px 0;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.search-bar button img {
+  width: 16px;
+  height: 16px;
+}
+
+/* ===== Curva decorativa ===== */
+.curva {
+  width: 100%;
+  height: 120px;
+  background-color: #7bb6a4;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+  margin-top: 50px;
+}
+
+/*tela 3*/
+/* ===== Reset e Base ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background-color: #f5f5f5;
+  color: #333;
+}
+
+/* ===== Cabeçalho e Barra de Navegação ===== */
+.navbar {
+  background-color: #7bb6a4;
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  background-color: #fff;
+  color: #7bb6a4;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.menu ul {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.menu a:hover {
+  text-decoration: underline;
+}
+
+.menu img.icon {
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  object-fit: contain;
+}
+
+/* ===== Conteúdo Principal ===== */
+.conteudo {
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 30px 50px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #333;
+  text-align: center;
+}
+
+/* ===== Formulário de Cadastro ===== */
+.cadastro-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 40px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #3d8275;
+}
+
+input, select {
+  padding: 8px 10px;
+  border: 1px solid #bcbcbc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+/* ===== Botões ===== */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 40px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-decoration: none;
+  text-align: center;
+  background-color: #7bb6a4;
+  color: #fff;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}
+
+/*tela 4*/
+
+/* ===== Conteúdo Principal ===== */
+main, .container {
+  max-width: 900px;
+  margin: 40px auto;
+  background-color: #fff;
+  padding: 30px 50px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 25px;
+  color: #333;
+  text-align: left;
+}
+
+/* ===== Formulários ===== */
+.questionario-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 40px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 5px;
+  color: #3d8275;
+}
+
+input, select, textarea {
+  padding: 8px 10px;
+  border: 1px solid #bcbcbc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+textarea {
+  resize: none;
+}
+
+/* ===== Checkboxes ===== */
+.checkboxes {
+  display: flex;
+  justify-content: center;
+  gap: 60px;
+  margin-bottom: 20px;
+}
+
+.checkboxes label {
+  font-weight: 500;
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.checkboxes input {
+  margin-top: 5px;
+  transform: scale(1.2);
+}
+
+/* ===== Botões ===== */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.btn {
+  padding: 10px 40px;
+  border: none;
+  border-radius: 6px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-decoration: none;
+  text-align: center;
+}
+
+.cadastrar {
+  background-color: #7bb6a4;
+  color: #fff;
+}
+
+.voltar {
+  background-color: #c3d6d0;
+  color: #333;
+}
+
+.btn:hover {
+  opacity: 0.9;
+}

@@ -10,53 +10,66 @@
   <header class="navbar">
     <div class="logo">Logo</div>
     <nav class="menu">
-      <a href="#">🏠 Início</a>
-      <a href="#">📝 Questionário</a>
-      <a href="#">📋 Lista</a>
-      <a href="#">📜 Histórico</a>
+      <ul>
+        <li><a href="tela2.html"><img src="casa.jfif" alt="Início" class="icon"> Início</a></li>
+        <li><a href="tela3.html"><img src="estetoscópio.jfif" alt="Questionário" class="icon"> Questionário</a></li>
+        <li><a href="tela4.html"><img src="pacientes.jfif" alt="Lista" class="icon"> Lista</a></li>
+        <li><a href="tela5.html"><img src="histórico.jfif" alt="Histórico" class="icon"> Histórico</a></li>
+      </ul>
     </nav>
   </header>
 
-  <main class="container">
+  <main class="conteudo">
     <section class="busca">
-      <h2>Busca/Cadastro de Pacientes</h2>
-      <label for="cpf">CPF:</label>
-      <input type="text" id="cpf" placeholder="000.000.000-00">
-      <button type="button" class="btn cadastrar" onclick="window.location.href='tela3.html'"> Cadastrar </button>      
+      <h3>Busca/Cadastro de Pacientes</h3>
+      <div class="cpf-container">
+        <label for="cpf"><strong>CPF:</strong></label>
+        <input type="text" id="cpf" placeholder="000.000.000-00">
+      </div>
+      <div class="btn-container">
+        <button type="button" class="btn">Buscar/Cadastrar</button>
+      </div>
     </section>
 
     <section class="urgencia">
-      <h2>Ordem de Urgência</h2>
+      <h3>Ordem de Urgência</h3>
+      <div class="search-bar">
+        <input type="text" placeholder="Buscar">
+        <button type="button"><img src="lupa.png" alt="Buscar"></button>
+      </div>
       <div class="tabela-container">
         <table>
           <thead>
             <tr>
               <th>Nome</th>
-              <th>N°</th>
-              <th>Prioridade</th>
+              <th class="alinhamento-centro">N°</th>
+              <th class="alinhamento-direita">Prioridade</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>Maria Silva</td>
-              <td>01</td>
-              <td><span class="prioridade emergencia">Emergência</span></td>
+              <td></td>
+              <td class="alinhamento-centro"></td>
+              <td class="alinhamento-direita"><span class="prioridade emergencia">Emergência</span></td>
             </tr>
             <tr>
-              <td>João Souza</td>
-              <td>02</td>
-              <td><span class="prioridade pouco-urgente">Pouco Urgente</span></td>
+              <td></td>
+              <td class="alinhamento-centro"></td>
+              <td class="alinhamento-direita"><span class="prioridade pouco-urgente">Pouco Urgente</span></td>
             </tr>
             <tr>
-              <td>Carla Lima</td>
-              <td>03</td>
-              <td><span class="prioridade urgente">Urgente</span></td>
+              <td></td>
+              <td class="alinhamento-centro"></td>
+              <td class="alinhamento-direita"><span class="prioridade urgente">Urgente</span></td>
             </tr>
           </tbody>
         </table>
       </div>
-      <button class="btn-secundario">Lista de Pacientes</button>
+      <div class="btn-container">
+        <button class="btn-secundario">Lista de Pacientes</button>
+      </div>
     </section>
   </main>
+  <div class="curva"></div>
 </body>
 </html>
