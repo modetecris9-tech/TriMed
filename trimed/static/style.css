@@ -1,8 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: 'Poppins', sans-serif;
 }
 
 body {
@@ -302,4 +303,222 @@ input, select {
   border: 1px solid #bcbcbc;
   border-radius: 6px;
   font-size: 14px;
+}
+
+/* tela login */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+.pagina-login {
+  background-color: #f5f8f7;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh; /* Usar min-height para melhor adaptação */
+  padding: 20px;
+}
+
+.bloco-login {
+  display: flex;
+  width: 90%;
+  max-width: 1100px;
+  height: 600px;
+  
+  /* MUDANÇA 1: Transparente para que o right-panel possa ter a curva */
+  background: transparent; 
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* Sombra um pouco mais forte */
+  position: relative;
+}
+
+.lado-esquerdo {
+  width: 45%;
+  background: #61A493;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 1; /* Garante que fique "por baixo" da curva */
+  border-radius: 20px 0 0 20px; /* Mantém o canto do container esquerdo arredondado */
+}
+
+/* O elemento .curve foi removido! */
+
+.ilustracao {
+  width: 80%;
+  max-width: 400px;
+  z-index: 2;
+  border-radius: 12px;
+  object-fit: cover; /* Garante que a imagem se ajuste bem */
+}
+
+.lado-direito {
+  width: 55%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  position: relative;
+  
+  /* MUDANÇA 2: Cria o efeito de curva com border-radius */
+  background: #fff; /* Adicionar o background branco aqui */
+  border-top-left-radius: 100px; 
+  border-bottom-left-radius: 100px;
+  padding-left: 60px; /* Ajusta o padding para afastar o conteúdo da curva */
+  z-index: 2; /* Garante que ele fique por cima do left-panel na área da curva */
+}
+
+.caixa-login {
+  background: #fff;
+  padding: 40px 50px;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05); /* Sombra mais sutil na caixa de login */
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.caixa-login h1 {
+  font-size: 2.2rem; /* Aumentado um pouco o H1 */
+  font-weight: 700;
+  color: #1f3c37;
+  margin-bottom: 5px;
+}
+
+.subtitulo {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333; /* Cor mais neutra para o subtítulo */
+  margin-bottom: 15px;
+}
+
+.informacao {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 25px;
+}
+
+label {
+  font-weight: 600;
+  color: #61A493;
+  display: block;
+  margin-bottom: 5px;
+  text-align: left;
+}
+
+input {
+  width: 100%;
+  padding: 12px 10px; /* Aumentado o padding para altura */
+  border: 1px solid #ddd; /* Borda mais suave */
+  border-radius: 8px;
+  font-size: 1rem;
+  margin-bottom: 15px;
+  outline: none;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus {
+  border-color: #61A493;
+  box-shadow: 0 0 5px rgba(97, 164, 147, 0.5);
+}
+
+.campo-senha {
+  position: relative;
+}
+
+.mostrar-senha {
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-65%); /* Ajuste para centralizar melhor */
+  padding: 5px; /* Adiciona área de clique */
+}
+
+.olho {
+  width: 22px; /* Ícone um pouco maior */
+  height: 22px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.mostrar-senha:hover .plho {
+  opacity: 1;
+}
+
+.senha-esquecida {
+  display: block;
+  text-align: right;
+  font-size: 0.85rem;
+  color: #61A493;
+  text-decoration: none;
+  margin-bottom: 20px;
+  transition: color 0.2s;
+}
+
+.senha-esquecida:hover {
+  color: #4e887a;
+}
+
+.botao-login {
+  width: 100%;
+  padding: 14px; /* Aumentado o padding para um botão mais imponente */
+  border: none;
+  border-radius: 8px;
+  background: #61A493;
+  color: white;
+  font-weight: 700; /* Mais destaque */
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.1s;
+  box-shadow: 0 4px 10px rgba(97, 164, 147, 0.4);
+}
+
+.botao-login:hover {
+  background: #4e887a;
+  transform: translateY(-1px);
+}
+
+footer {
+  position: absolute;
+  bottom: 20px;
+  font-size: 0.8rem;
+  color: #777;
+}
+
+/* ------------------ RESPONSIVIDADE (MOBILE) ------------------ */
+
+@media (max-width: 992px) {
+  .container {
+  flex-direction: column;
+  height: auto;
+  max-width: 450px;
+ }
+
+ .lado-esquerdo {
+  display: none; /* Esconde a ilustração no mobile para priorizar o formulário */
+  width: 100%;
+  height: 200px;
+ }
+
+ .lado-direito {
+  width: 100%;
+  border-radius: 20px; /* Remove as bordas arredondadas laterais */
+  padding: 30px;
+ }
+ 
+ .caixa-login {
+  box-shadow: none; /* Remove a sombra na caixa de login no mobile */
+  padding: 20px 0;
+ }
+
+ footer {
+  position: static;
+  margin-top: 20px;
+ }
 }

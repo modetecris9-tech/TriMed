@@ -4,11 +4,19 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Login - Triagem</title>
-	<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-	<div>
-		<h2>Entrar</h2>
+<body class="pagina-login">
+	<div class="bloco-login">
+		<div class="lado-esquerdo">
+			<img src="{{ url_for('static', filename='imagens/login-illustration.png') }}" class="ilustracao" alt="Ilustração de login">
+		</div>
+
+		<div class="lado-direito">
+			<div class="caixa-login">
+				<h1>TRIMED</h1>
+				<h2 class="subtitulo">Bem-vindo!</h2>
+				<p class="informacao">Acesse sua conta para continuar</p>
 
 		{% with mensagens = get_flashed_messages(with_categories=True) %}
 			{% if mensagens %}
@@ -25,10 +33,43 @@
 			<input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="11" inputmode="numeric" title="Digite o CPF">
 
 			<label for="senha">Senha</label>
-			<input id="senha" name="senha" type="password" placeholder="Senha" required>
-
-			<button type="submit">Entrar</button>
+				<div class="campo-senha">
+					<input id="senha" name="senha" type="password" placeholder="Senha" required>
+					<button type="button" class="mostrar-senha" onclick="togglePassword()">
+						<img id="olho" 
+							src="https://cdn-icons-png.flaticon.com/512/2767/2767146.png" 
+							alt="Mostrar senha" 
+							class="olho">
+					</button>
+				</div>			
+			<button type="submit" class="botao-login">Entrar</button>
 		</form>
-	</div>
+				<footer>
+					© 2025 <strong>TRIMED</strong> — Todos os direitos reservados
+				</footer>
+			</div>
+        </div>
+    </div>
+    <script>
+        function togglePassword() {
+        const senhaInput = document.getElementById('senha');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const isPassword = senhaInput.type === 'password';
+
+        // URLs de ícones de olho mais claros (olho cortado e olho aberto)
+        const ICON_OPEN = 'https://cdn-icons-png.flaticon.com/512/2767/2767185.png'; // Olho aberto
+        const ICON_CLOSED = 'https://cdn-icons-png.flaticon.com/512/2767/2767146.png'; // Olho cortado
+
+        senhaInput.type = isPassword ? 'text' : 'password';
+        
+        // Troca as fontes
+        eyeIcon.src = isPassword
+        ? ICON_OPEN // Se o input era 'password' (vai mudar para 'text'), mostra olho aberto
+        : ICON_CLOSED; // Se o input era 'text' (vai mudar para 'password'), mostra olho cortado
+        
+        // Atualiza o alt para acessibilidade
+        eyeIcon.alt = isPassword ? 'Ocultar senha' : 'Mostrar senha';
+        }
+    </script>		
 </body>
 </html>
