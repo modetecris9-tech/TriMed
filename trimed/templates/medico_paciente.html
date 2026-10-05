@@ -1,95 +1,258 @@
-<!-- esse template mostra a ficha médica de um paciente específico, nele o médico pode escrever ou 
-editar a receita e o atestado do paciente,
-e salvar essas informações temporariamente no sistema
-funciona tipo como o consultório do médico, onde o atendimento realmente acontece
--->
-
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <title>Ficha Médica</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prontuário Médico - {{ paciente.nome }} - TRIMED</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <h1>Ficha médica de {{ paciente.nome }}</h1>
-
-    <form method="POST">
-        <h3>Medicamentos</h3>
-        <div id="medicamentos-container">
-        <!-- Campos existentes -->
-        {% for med in dados.medicamentos %}
-            <div class="medicamento">
-            <input type="text" name="medicamentos_nome" placeholder="Nome do medicamento" value="{{ med.nome }}">
-            <input type="text" name="medicamentos_dosagem" placeholder="Dosagem" value="{{ med.dosagem }}">
-            <input type="text" name="medicamentos_quantidade" placeholder="Quantidade" value="{{ med.quantidade }}">
-            <button type="button" onclick="removerMedicamento(this)">Remover</button>
-            </div>
-        {% endfor %}
+  <header>
+    <div class="cabecalho">
+      <a href="{{ url_for('index') }}" class="brand-wrapper">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="TRIMED">
         </div>
-        <button type="button" onclick="adicionarMedicamento()">Adicionar medicamento</button>
+        <div class="brand-text">
+          <span class="brand-title">TRIMED</span>
+          <span class="brand-subtitle">Gestão Clínica</span>
+        </div>
+      </a>
 
-        <script>
-        function adicionarMedicamento() {
-            const container = document.getElementById("medicamentos-container");
-            const div = document.createElement("div");
-            div.className = "medicamento";
-            div.innerHTML = `
-            <input type="text" name="medicamentos_nome" placeholder="Nome do medicamento">
-            <input type="text" name="medicamentos_dosagem" placeholder="Dosagem">
-            <input type="text" name="medicamentos_quantidade" placeholder="Quantidade">
-            <button type="button" onclick="removerMedicamento(this)">Remover</button>
-            `;
-            container.appendChild(div);
-        }
+      <nav class="menu">
+        <ul>
+          <li><a href="{{ url_for('index') }}"><i class="material-icons">home</i> Início</a></li>
+          <li><a href="{{ url_for('lista') }}"><i class="material-icons">people</i> Pacientes</a></li>
+        </ul>
+      </nav>
 
-        function removerMedicamento(botao) {
-            botao.parentElement.remove();
-        }
-        </script>
+      <div class="topbar-user">
+        {% if usuario %}
+        <div class="user-chip">
+          <i class="material-icons">badge</i>
+          <span>{{ usuario_nome }}</span>
+        </div>
+        <span class="perfil-badge perfil-{{ perfil }}">{{ 'Médico' if perfil == 'medico' else 'Enfermeiro' }}</span>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="btn-logout" title="Encerrar sessão">
+          <i class="material-icons">logout</i> Sair
+        </a>
+      </div>
+    </div>
+  </header>
 
-        <label>Observações:</label><br>
-        <textarea name="observacoes" rows="3" cols="60">{{ dados.observacoes or '' }}</textarea><br><br>
-
-        <h3>Atestado Médico</h3>
-        <label>Doença:</label><br>
-        <input type="text" name="doenca" value="{{ dados.doenca or '' }}"><br><br>
-
-        <label>Horário da consulta:</label><br>
-        <input type="text" name="horario" value="{{ dados.horario or '' }}"><br><br>
-
-        <label>CID-10:</label><br>
-        <input type="text" name="cid" value="{{ dados.cid or '' }}"><br><br>
-
-        <label>Dias de afastamento:</label><br>
-        <input type="number" name="dias_afastamento" value="{{ dados.dias_afastamento or '' }}"><br><br>
-
-        <label>Cidade:</label><br>
-        <input type="text" name="cidade" value="{{ dados.cidade or '' }}"><br><br>
-
-        <label>Nome do Médico:</label><br>
-        <input type="text" name="nome_medico" value="{{ dados.nome_medico or '' }}" required><br><br>
-
-        <label>CRM do Médico:</label><br>
-        <input type="text" name="crm" value="{{ dados.crm or '' }}"><br><br>
-
-        <label>Hospital:</label><br>
-        <input type="text" name="hospital" value="{{ dados.hospital or '' }}" required><br><br>
-
-        <button type="submit">Salvar alterações</button>
-    </form>
-
-    {% if dados.ultima_edicao %}
-        <p><em>Última edição: {{ dados.ultima_edicao }}</em></p>
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+    <div class="rotas">
+      <ul class="flashes">
+        {% for category, msg in messages %}
+          <li class="flash {{ category }}">
+            <i class="material-icons">
+              {% if category == 'success' or category == 'sucesso' %}check_circle
+              {% elif category == 'warning' or category == 'aviso' %}warning
+              {% elif category == 'Erro' or category == 'erro' or category == 'error' %}error
+              {% else %}info{% endif %}
+            </i>
+            <span>{{ msg }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
     {% endif %}
+  {% endwith %}
 
-    {% if dados.medicamentos %}
-    <a href="{{ url_for('gerar_receita_pdf', cpf=cpf) }}" class="btn btn-primary">Baixar Receita PDF</a>
-    {% endif %}
+  <main class="conteudo">
+    <div class="campo-branco">
+      <div class="paciente-header-info">
+        <div class="paciente-header-badge">
+          <div class="paciente-avatar">
+            <i class="material-icons">medical_services</i>
+          </div>
+          <div class="paciente-meta">
+            <h2>Prontuário Médico — {{ paciente.nome }}</h2>
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+              <span class="paciente-cpf-pill">
+                <i class="material-icons" style="font-size: 14px;">pin</i> CPF: {{ cpf|format_cpf }}
+              </span>
+              {% if dados.ultima_edicao %}
+                <span class="user-chip" style="font-size: 0.8rem; padding: 2px 10px;">
+                  <i class="material-icons" style="font-size: 14px;">history</i> Última alteração: {{ dados.ultima_edicao }}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
 
-    {% if dados.doenca %}
-    <a href="{{ url_for('gerar_atestado_pdf', cpf=cpf) }}" class="btn btn-primary">Baixar Atestado PDF</a>
-    {% endif %}
+        <div class="fim-right">
+          {% if perfil == 'medico' %}
+            {% if dados.medicamentos %}
+              <a href="{{ url_for('gerar_receita_pdf', cpf=cpf) }}" class="botao" title="Gerar e baixar PDF da receita">
+                <i class="material-icons">picture_as_pdf</i> Receita (PDF)
+              </a>
+            {% endif %}
+            {% if dados.doenca %}
+              <a href="{{ url_for('gerar_atestado_pdf', cpf=cpf) }}" class="botao" title="Gerar e baixar PDF do atestado">
+                <i class="material-icons">description</i> Atestado (PDF)
+              </a>
+            {% endif %}
+          {% endif %}
+        </div>
+       {% if perfil == 'medico' %}
+      <form method="post" class="cadastro">
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="material-icons">medication</i>
+            <span>Prescrição Farmacológica / Receita Médica</span>
+          </div>
 
-    <a href="{{ url_for('medico_lista') }}">Voltar à lista de pacientes</a>
+          <div class="medicamentos-header-row">
+            <span>Medicamento</span>
+            <span>Dosagem</span>
+            <span>Quantidade</span>
+            <span>Ação</span>
+          </div>
+
+          <div id="medicamentos-container" class="medicamentos-lista">
+            {% for med in dados.medicamentos %}
+              <div class="linha medicamento">
+                <input type="text" name="medicamentos_nome" placeholder="Ex: Amoxicilina" value="{{ med.nome }}">
+                <input type="text" name="medicamentos_dosagem" placeholder="Ex: 500mg" value="{{ med.dosagem }}">
+                <input type="text" name="medicamentos_quantidade" placeholder="Ex: 21 cápsulas" value="{{ med.quantidade }}">
+                <button type="button" class="botao-vermelho" onclick="removerMedicamento(this)">
+                  <i class="material-icons" style="font-size: 16px;">delete</i> Excluir
+                </button>
+              </div>
+            {% endfor %}
+          </div>
+
+          <div>
+            <button type="button" class="botao-secundario" onclick="adicionarMedicamento()">
+              <i class="material-icons">add</i> Adicionar Medicamento
+            </button>
+          </div>
+
+          <div class="campo" style="margin-top: 12px;">
+            <label for="observacoes">Instruções Posológicas e Observações da Receita</label>
+            <textarea id="observacoes" name="observacoes" rows="3" placeholder="Orientações de administração, repouso, horários de tomada, recomendações dietéticas...">{{ dados.observacoes or '' }}</textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="material-icons">note_add</i>
+            <span>Emissão de Atestado Médico</span>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="doenca">Motivo do Afastamento / Sintoma</label>
+              <input type="text" id="doenca" name="doenca" value="{{ dados.doenca or '' }}" placeholder="Ex: Cefaleia intensa e febre alta">
+            </div>
+
+            <div class="campo">
+              <label for="horario">Horário do Atendimento</label>
+              <input type="text" id="horario" name="horario" value="{{ dados.horario or '' }}" placeholder="Ex: 14:30">
+            </div>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="cid">Classificação Internacional (CID-10)</label>
+              <input type="text" id="cid" name="cid" value="{{ dados.cid or '' }}" placeholder="Ex: J06.9">
+            </div>
+
+            <div class="campo">
+              <label for="dias_afastamento">Dias de Afastamento Solicitados</label>
+              <input type="number" id="dias_afastamento" name="dias_afastamento" min="1" max="90" value="{{ dados.dias_afastamento or '' }}" placeholder="Ex: 3">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="material-icons">local_hospital</i>
+            <span>Identificação do Profissional &amp; Unidade de Saúde</span>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="nome_medico">Nome do Médico Responsável <span class="required">*</span></label>
+              <input type="text" id="nome_medico" name="nome_medico" value="{{ dados.nome_medico or '' }}" placeholder="Ex: Dr. Roberto Funstan" required>
+            </div>
+
+            <div class="campo">
+              <label for="crm">Registro Profissional (CRM)</label>
+              <input type="text" id="crm" name="crm" value="{{ dados.crm or '' }}" placeholder="Ex: CRM/SP 123456">
+            </div>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="hospital">Unidade Hospitalar / Clínica <span class="required">*</span></label>
+              <input type="text" id="hospital" name="hospital" value="{{ dados.hospital or '' }}" placeholder="Ex: Hospital Municipal Central" required>
+            </div>
+
+            <div class="campo">
+              <label for="cidade">Município / Cidade</label>
+              <input type="text" id="cidade" name="cidade" value="{{ dados.cidade or '' }}" placeholder="Ex: São Paulo">
+            </div>
+          </div>
+        </div>
+
+        <div class="bloco-botao" style="justify-content: flex-start; margin-top: 8px;">
+          <button type="submit" class="botao">
+            <i class="material-icons">save</i> Salvar Informações Médicas
+          </button>
+        </div>
+      </form>
+      {% else %}
+      <div class="restricao-aviso">
+        <div class="restricao-icon">
+          <i class="material-icons">block</i>
+        </div>
+        <div>
+          <strong>Acesso restrito ao perfil Médico</strong>
+          <p>O seu perfil de Enfermeiro não possui autorização para prescrever medicamentos ou emitir atestados médicos. Apenas profissionais com perfil Médico podem realizar estas ações.</p>
+        </div>
+      </div>
+      {% endif %}
+
+      <div class="fim">
+        <div class="fim-left">
+          <a href="{{ url_for('medico_lista') }}" class="botao-secundario">
+            <i class="material-icons">arrow_back</i> Voltar à Lista
+          </a>
+          <a href="{{ url_for('questionario', cpf=cpf) }}" class="botao-secundario">
+            <i class="material-icons">assignment</i> Ver Triagem
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function adicionarMedicamento() {
+      const container = document.getElementById("medicamentos-container");
+      const div = document.createElement("div");
+      div.className = "linha medicamento";
+      div.innerHTML = `
+        <input type="text" name="medicamentos_nome" placeholder="Ex: Amoxicilina">
+        <input type="text" name="medicamentos_dosagem" placeholder="Ex: 500mg">
+        <input type="text" name="medicamentos_quantidade" placeholder="Ex: 21 cápsulas">
+        <button type="button" class="botao-vermelho" onclick="removerMedicamento(this)">
+          <i class="material-icons" style="font-size: 16px;">delete</i> Excluir
+        </button>
+      `;
+      container.appendChild(div);
+    }
+
+    function removerMedicamento(botao) {
+      const row = botao.closest('.linha.medicamento');
+      if (row) {
+        row.remove();
+      }
+    }
+  </script>
 </body>
 </html>

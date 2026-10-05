@@ -1,141 +1,251 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<title>Questionário de Saúde - {{ paciente.nome }}</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Questionário de Triagem - {{ paciente.nome if paciente and paciente.nome else 'Paciente' }} - TRIMED</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-<h1>Questionário — {{ paciente.nome if paciente and paciente.nome else 'Paciente (sem CPF)' }}</h1>
-<p><strong>CPF:</strong> {{ cpf|format_cpf }}</p>
-{% if paciente and paciente.data_nascimento %}
-<p><strong>Idade:</strong> {{ idade }} anos</p>
-{% endif %}
-<hr>
+  <header>
+    <div class="cabecalho">
+      <a href="{{ url_for('index') }}" class="brand-wrapper">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="TRIMED">
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">TRIMED</span>
+          <span class="brand-subtitle">Gestão Clínica</span>
+        </div>
+      </a>
 
-<form method="post">
-  {% if cpf and cpf.startswith('cpf temporario-') %}
-  <div class="field">
-    <label>Nome do paciente:</label><br>
-    <input type="text" name="nome_temp" value="{{ paciente.nome if paciente and paciente.nome else '' }}" required>
-  </div>
+      <nav class="menu">
+        <ul>
+          <li><a href="{{ url_for('index') }}"><i class="material-icons">home</i> Início</a></li>
+          <li><a href="{{ url_for('lista') }}"><i class="material-icons">people</i> Pacientes</a></li>
+        </ul>
+      </nav>
 
-  <div class="field">
-    <label>Idade (anos):</label><br>
-    <input type="number" name="idade_temp" min="0" max="130" value="{{ paciente.idade if paciente and paciente.idade is not none else '' }}">
-  </div>
-  {% endif %}
-
-  <div class="field">
-    <label><input type="checkbox" name="fumante" {% if dados and dados.fumante %}checked{% endif %}> Fumante</label>
-    <label><input type="checkbox" name="alcoolatra" {% if dados and dados.alcoolatra %}checked{% endif %}> Alcoólatra</label>
-    <label><input type="checkbox" name="diabetico" {% if dados and dados.diabetico %}checked{% endif %}> Diabético</label>
-    <label><input type="checkbox" name="hipertenso" {% if dados and dados.hipertenso %}checked{% endif %}> Hipertenso</label>
-  </div>
-
-  <div class="field">
-    <p>Faz uso de medicamentos?</p>
-    <input type="radio" id="medicamento_sim" name="medicamento_bool" value="sim" {% if dados and dados.medicamento_bool=='sim' %}checked{% endif %}>
-    <label for="medicamento_sim">Sim</label>
-
-    <input type="radio" id="medicamento_nao" name="medicamento_bool" value="nao" {% if not dados or dados.medicamento_bool!='sim' %}checked{% endif %}>
-    <label for="medicamento_nao">Não</label>
-
-    <div class="medicamento-detalhe">
-      <input type="text" name="medicamentos" placeholder="Descreva os medicamentos" value="{{ dados.medicamentos if dados else '' }}">
+      <div class="topbar-user">
+        {% if usuario %}
+        <div class="user-chip">
+          <i class="material-icons">badge</i>
+          <span>{{ usuario_nome }}</span>
+        </div>
+        <span class="perfil-badge perfil-{{ perfil }}">{{ 'Médico' if perfil == 'medico' else 'Enfermeiro' }}</span>
+        {% endif %}
+        <a href="{{ url_for('logout') }}" class="btn-logout" title="Encerrar sessão">
+          <i class="material-icons">logout</i> Sair
+        </a>
+      </div>
     </div>
-  </div>
+  </header>
 
-  <div class="field">
-    <p>Possui alergia a medicamento?</p>
-    <input type="radio" id="alergia_sim" name="alergia_bool" value="sim" {% if dados and dados.alergia_bool=='sim' %}checked{% endif %}>
-    <label for="alergia_sim">Sim</label>
-
-    <input type="radio" id="alergia_nao" name="alergia_bool" value="nao" {% if not dados or dados.alergia_bool!='sim' %}checked{% endif %}>
-    <label for="alergia_nao">Não</label>
-
-    <div class="alergia-detalhe">
-      <input type="text" name="alergias" placeholder="Informe aqui" value="{{ dados.alergias if dados else '' }}">
+  {% with mensagens = get_flashed_messages(with_categories=True) %}
+    {% if mensagens %}
+    <div class="rotas">
+      <ul class="flashes">
+        {% for categoria, msg in mensagens %}
+          <li class="flash {{ categoria }}">
+            <i class="material-icons">
+              {% if categoria == 'success' or categoria == 'sucesso' %}check_circle
+              {% elif categoria == 'warning' or categoria == 'aviso' %}warning
+              {% elif categoria == 'Erro' or categoria == 'erro' or categoria == 'error' %}error
+              {% else %}info{% endif %}
+            </i>
+            <span>{{ msg }}</span>
+          </li>
+        {% endfor %}
+      </ul>
     </div>
-  </div>
+    {% endif %}
+  {% endwith %}
 
-  <div class="field">
-    <p>Possui histórico de doenças ou doenças crônicas?</p>
-    <input type="radio" id="historico_sim" name="historico_bool" value="sim" {% if dados and dados.historico_bool=='sim' %}checked{% endif %}>
-    <label for="historico_sim">Sim</label>
+  <main class="conteudo">
+    <div class="campo-branco">
+      <div class="paciente-header-info">
+        <div class="paciente-header-badge">
+          <div class="paciente-avatar">
+            <i class="material-icons">assignment</i>
+          </div>
+          <div class="paciente-meta">
+            <h2>Triagem Clínica — {{ paciente.nome if paciente and paciente.nome else 'Paciente Temporário' }}</h2>
+            <div style="display: flex; gap: 8px; align-items: center; margin-top: 4px; flex-wrap: wrap;">
+              <span class="paciente-cpf-pill">
+                <i class="material-icons" style="font-size: 14px;">pin</i> CPF: {{ cpf|format_cpf }}
+              </span>
+              {% if paciente and paciente.data_nascimento %}
+                <span class="user-chip" style="font-size: 0.8rem; padding: 2px 10px;">
+                  <i class="material-icons" style="font-size: 14px;">calendar_today</i> {{ idade }} anos
+                </span>
+              {% endif %}
+              {% if dados and dados.prioridade %}
+                <span class="prioridade prioridade-{{ dados.prioridade|lower|replace(' ', '-') }}">
+                  Prioridade: {{ dados.prioridade }}
+                </span>
+              {% endif %}
+            </div>
+          </div>
+        </div>
 
-    <input type="radio" id="historico_nao" name="historico_bool" value="nao" {% if not dados or dados.historico_bool!='sim' %}checked{% endif %}>
-    <label for="historico_nao">Não</label>
+        <div class="fim-right">
+          <a href="{{ url_for('medico_paciente', cpf=cpf) }}" class="botao-secundario">
+            <i class="material-icons">medical_services</i> Ficha Médica
+          </a>
+        </div>
+      </div>
 
-    <div class="historico-detalhe">
-      <input type="text" name="historico_doencas" placeholder="Descreva o histórico" value="{{ dados.historico_doencas if dados else '' }}">
+      <form method="post" class="cadastro">
+        {% if cpf and cpf.startswith('cpf temporario-') %}
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="material-icons">person</i>
+            <span>Identificação do Paciente Temporário</span>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="nome_temp">Nome do Paciente <span class="required">*</span></label>
+              <input type="text" id="nome_temp" name="nome_temp" value="{{ paciente.nome if paciente and paciente.nome else '' }}" placeholder="Informe o nome" required autofocus>
+            </div>
+
+            <div class="campo">
+              <label for="idade_temp">Idade Estimada (anos)</label>
+              <input type="number" id="idade_temp" name="idade_temp" min="0" max="130" value="{{ paciente.idade if paciente and paciente.idade is not none else '' }}" placeholder="Ex: 35">
+            </div>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="altura_temp">Altura (cm) <span class="required">*</span></label>
+              <input type="number" id="altura_temp" name="altura" step="0.1" value="{{ paciente.altura if paciente and paciente.altura else '' }}" placeholder="Ex: 170" required>
+            </div>
+
+            <div class="campo">
+              <label for="peso_temp">Peso (kg) <span class="required">*</span></label>
+              <input type="number" id="peso_temp" name="peso" step="0.1" value="{{ paciente.peso if paciente and paciente.peso else '' }}" placeholder="Ex: 68.0" required>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="material-icons">health_and_safety</i>
+            <span>Condições Pré-existentes & Fatores de Risco</span>
+          </div>
+
+          <div class="health-habits-grid">
+            <label class="habit-card" for="check-fumante">
+              <input type="checkbox" id="check-fumante" name="fumante" {% if dados and dados.fumante %}checked{% endif %}>
+              <span>Fumante</span>
+            </label>
+
+            <label class="habit-card" for="check-alcoolatra">
+              <input type="checkbox" id="check-alcoolatra" name="alcoolatra" {% if dados and dados.alcoolatra %}checked{% endif %}>
+              <span>Alcoólatra</span>
+            </label>
+
+            <label class="habit-card" for="check-diabetico">
+              <input type="checkbox" id="check-diabetico" name="diabetico" {% if dados and dados.diabetico %}checked{% endif %}>
+              <span>Diabético</span>
+            </label>
+
+            <label class="habit-card" for="check-hipertenso">
+              <input type="checkbox" id="check-hipertenso" name="hipertenso" {% if dados and dados.hipertenso %}checked{% endif %}>
+              <span>Hipertenso</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="material-icons">monitor_heart</i>
+            <span>Sinais Vitais & Quadro Clínico Atual</span>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="pressao">Pressão Arterial (mmHg) <span class="required">*</span></label>
+              <input type="text" id="pressao" name="pressao" value="{{ dados.pressao if dados else '' }}" placeholder="Ex: 120/80" required>
+            </div>
+
+            <div class="campo">
+              <label for="temperatura">Temperatura Corporal (°C)</label>
+              <input type="number" id="temperatura" name="temperatura" step="0.1" min="35" max="42" value="{{ dados.temperatura if dados else '' }}" placeholder="Ex: 36.5">
+            </div>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label for="medicamentos">Uso Regular de Medicamentos</label>
+              <input type="text" id="medicamentos" name="medicamentos" value="{{ dados.medicamentos if dados else '' }}" placeholder="Descreva os medicamentos em uso (ou deixe em branco)">
+            </div>
+
+            <div class="campo">
+              <label for="alergias">Alergias Conhecidas</label>
+              <input type="text" id="alergias" name="alergias" value="{{ dados.alergias if dados else '' }}" placeholder="Informe medicamentos ou substâncias que causam alergia">
+            </div>
+          </div>
+
+          <div class="campo">
+            <label for="historico_doencas">Histórico de Doenças e Cirurgias</label>
+            <input type="text" id="historico_doencas" name="historico_doencas" value="{{ dados.historico_doencas if dados else '' }}" placeholder="Descreva doenças prévias, cirurgias ou internações anteriores">
+          </div>
+
+          <div class="campo">
+            <label for="observacoes">Observações Clínicas Gerais</label>
+            <textarea id="observacoes" name="observacoes" rows="3" placeholder="Sintomas relatados, queixas principais ou anotações complementares do acolhimento">{{ dados.observacoes if dados else '' }}</textarea>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <div class="form-section-title">
+            <i class="material-icons">rule</i>
+            <span>Classificação de Risco & Prioridade</span>
+          </div>
+
+          <div class="linha">
+            <div class="campo">
+              <label>Prioridade Calculada (Automática)</label>
+              <input type="text" value="{{ dados.prioridade_auto if dados and dados.prioridade_auto else 'Ainda não calculada' }}" readonly class="readonly">
+            </div>
+
+            <div class="campo">
+              <label for="prioridade_manual">Ajuste Manual do Profissional (Opcional)</label>
+              <select id="prioridade_manual" name="prioridade_manual">
+                <option value="">Manter classificação automática</option>
+                <option value="Emergencia" {% if dados and dados.prioridade == 'Emergencia' %}selected{% endif %}>Emergência (Vermelho)</option>
+                <option value="Muito Urgente" {% if dados and dados.prioridade == 'Muito Urgente' %}selected{% endif %}>Muito Urgente (Laranja)</option>
+                <option value="Urgente" {% if dados and (dados.prioridade == 'Urgente' or dados.prioridade == 'urgente') %}selected{% endif %}>Urgente (Amarelo)</option>
+                <option value="Pouco Urgente" {% if dados and dados.prioridade == 'Pouco Urgente' %}selected{% endif %}>Pouco Urgente (Verde)</option>
+                <option value="Não Urgente" {% if dados and dados.prioridade == 'Não Urgente' %}selected{% endif %}>Não Urgente (Azul)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="bloco-botao" style="justify-content: flex-start; margin-top: 8px;">
+          <button type="submit" class="botao">
+            <i class="material-icons">save</i> Salvar Classificação de Triagem
+          </button>
+        </div>
+      </form>
+
+      <div class="fim">
+        <div class="fim-left">
+          {% if cpf and not cpf.startswith('cpf temporario-') %}
+            <a href="{{ url_for('paciente', cpf=cpf) }}" class="botao-secundario">
+              <i class="material-icons">badge</i> Prontuário do Paciente
+            </a>
+          {% endif %}
+          <a href="{{ url_for('index') }}" class="botao-secundario">
+            <i class="material-icons">home</i> Voltar ao Início
+          </a>
+        </div>
+      </div>
     </div>
-  </div>
-
-  <div class="field">
-    <label>Pressão (texto ou ex: 120/80):</label><br>
-    
-    <input type="text" name="pressao" value="{{ dados.pressao if dados else '' }}">
-  </div>
-
-  <div class="field">
-    <label>Temperatura (°C):</label><br>
-    <input type="number" name="temperatura" step="0.1" min="35" max="42" 
-           value="{{ dados.temperatura if dados else '' }}" 
-           placeholder="36.5">
-  </div>
-
-  {% if cpf.startswith('cpf temporario-') %}
-    <div class="field">
-      <label>Altura (cm):</label><br>
-      <input type="number" name="altura" step="0.1" value="{{ paciente.altura if paciente and paciente.altura else '' }}" required>
-    </div>
-
-    <div class="field">
-      <label>Peso (kg):</label><br>
-      <input type="number" name="peso" step="0.1" value="{{ paciente.peso if paciente and paciente.peso else '' }}" required>
-    </div>
-  {% endif %}
-
-  <div class="field">
-    <label>Observações:</label><br>
-    <textarea name="observacoes" rows="3" >{{ dados.observacoes if dados else '' }}</textarea>
-  </div>
-
-  <div class="field">
-    <label>Prioridade automática:</label>
-    <input type="text" value="{{ dados.prioridade_auto if dados else '—' }}" readonly>
-  </div>
-
-  <div class="field">
-    <label>Editar prioridade (opcional):</label>
-    <select name="prioridade_manual">
-      <option value="">Manter automática</option>
-      <option value="Emergencia" {% if dados and dados.prioridade == 'Emergencia' %}selected{% endif %}>Emergência</option>
-      <option value="Muito Urgente" {% if dados and dados.prioridade == 'Muito Urgente' %}selected{% endif %}>Muito Urgente</option>
-      <option value="urgente" {% if dados and dados.prioridade == 'urgente' %}selected{% endif %}>Urgente</option>
-      <option value="Pouco Urgente" {% if dados and dados.prioridade == 'Pouco Urgente' %}selected{% endif %}>Pouco Urgente</option>
-      <option value="Não Urgente" {% if dados and dados.prioridade == 'Não Urgente' %}selected{% endif %}>Não Urgente</option>
-
-    </select>
-  </div>
-
-  <button type="submit">Salvar</button>
-</form>
-
-{% with mensagens = get_flashed_messages(with_categories=True) %}
-  {% if mensagens %}
-    <ul class="flashes">
-    {% for categoria, msg in mensagens %}
-      <li><strong>{{ categoria }}:</strong> {{ msg }}</li>
-    {% endfor %}
-    </ul>
-  {% endif %}
-{% endwith %}
-{% if cpf and not cpf.startswith('cpf temporario-') %}
-<p><a href="{{ url_for('paciente', cpf=cpf) }}">Voltar ao paciente</a></p>
-{% endif %}
-<p><a href="{{ url_for('index', cpf=cpf) }}">Voltar a página inicial</a></p>
-
+  </main>
 </body>
 </html>

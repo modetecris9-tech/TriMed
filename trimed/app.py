@@ -6,15 +6,30 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from datetime import datetime
 from reportlab.lib.utils import simpleSplit
+from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file, make_response
 
 app = Flask(__name__)
-app.secret_key = "chave-secreta"  
+app.secret_key = "chave-secreta"
 app.logger.setLevel(logging.INFO)
 
-# Dados são perdidos ao reiniciar o servidor.
 pacientes = {}
 questionarios = {}
+
+usuarios = {
+    "52998224725": {
+        "cpf": "52998224725",
+        "nome": "Dr. Carlos Almeida",
+        "senha_hash": generate_password_hash("medadmin"),
+        "perfil": "medico",
+    },
+    "16899535009": {
+        "cpf": "16899535009",
+        "nome": "João Ferreira",
+        "senha_hash": generate_password_hash("enfermeire"),
+        "perfil": "enfermeiro",
+    },
+}
 
 os.environ['FLASK_APP'] = 'app.py'
 os.environ['FLASK_ENV'] = 'development'
@@ -58,68 +73,75 @@ def validar_cpf(cpf: str) -> bool:
 
     return True
 
-# registra como filtro Jinja
 app.add_template_filter(format_cpf, name='format_cpf')
 
-#rota que redireciona para login, pq senao abre direto o index
+def get_usuario_logado():
+    cpf = request.cookies.get('usuario_logado')
+    if not cpf:
+        return None
+    return usuarios.get(cpf)
+
+def perfil_usuario():
+    u = get_usuario_logado()
+    return u['perfil'] if u else None
+
+def requer_perfil(*perfis):
+    u = get_usuario_logado()
+    if not u:
+        return False
+    return u['perfil'] in perfis
+
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        #por enquanto isso nao esta sendo salvo em lugar nenhum, qualquer cpf e senha aceitos
         cpf_raw = request.form.get('cpf', '').strip()
         senha = request.form.get('senha', '')
         cpf = clean_cpf(cpf_raw)
         if not validar_cpf(cpf):
             flash('CPF inválido. Verifique os dígitos e tente novamente.', 'warning')
             return render_template('login.html')
-
+        user = usuarios.get(cpf)
+        if not user or not check_password_hash(user['senha_hash'], senha):
+            flash('Credenciais incorretas. Verifique o CPF e a senha.', 'warning')
+            return render_template('login.html')
         resp = make_response(redirect(url_for('index')))
-        #cookie expira em 7 dias
         resp.set_cookie('usuario_logado', cpf, max_age=60*60*24*7)
         return resp
     return render_template('login.html')
 
 @app.route('/index', methods=['GET','POST'])
 def index():
-    #pegar o cookie do usuario logado
-    usuario = request.cookies.get('usuario_logado')
-    #verifica se o usuario esta logado
-    if not usuario:
+    user = get_usuario_logado()
+    if not user:
         flash('Faça login primeiro.', 'warning')
         return redirect(url_for('login'))
-    
     if request.method == 'POST':
         cpf_raw = request.form.get('cpf','').strip()
         cpf = clean_cpf(cpf_raw)
         if not validar_cpf(cpf):
             flash('CPF inválido.', 'Erro')
             return redirect(url_for('index'))
-        # aceitar qualquer CPF numérico para testes
         return redirect(url_for('paciente', cpf=cpf))
-    
-    #lista por prioridade
     triagem = []
     for cpf, q in questionarios.items():
-        paciente = pacientes.get(cpf)
-        if paciente:
+        pac = pacientes.get(cpf)
+        if pac:
             triagem.append({
                 "cpf": cpf,
-                "nome": paciente.get("nome"),
+                "nome": pac.get("nome"),
                 "prioridade": q.get("prioridade", "Não Urgente")
             })
-
-    # definindo a ordem de prioridade para ordenação
     ordem_prioridade = {"Emergencia": 1, "Muito Urgente": 2, "Urgente": 3, "Pouco Urgente": 4, "Não Urgente": 5}
     triagem.sort(key=lambda x: (ordem_prioridade.get(x["prioridade"], 5)))
-
-    return render_template('index.html', triagem=triagem, usuario=usuario)
+    return render_template('index.html', triagem=triagem, usuario=user['cpf'], usuario_nome=user['nome'], perfil=user['perfil'])
 
 @app.route('/paciente/<cpf>', methods=['GET', 'POST'])
 def paciente(cpf):
-    usuario = request.cookies.get('usuario_logado')
-    if not usuario:
+    user = get_usuario_logado()
+    if not user:
         flash('Faça login primeiro.', 'warning')
         return redirect(url_for('login'))
+    usuario = user['cpf']
     
     imc = None
     classificacao = None
@@ -239,14 +261,15 @@ def paciente(cpf):
         except (ValueError, TypeError):
             app.logger.warning(f"Erro ao calcular IMC para paciente {cpf} com peso={dados.get('peso')} e altura={dados.get('altura')}")
 
-    return render_template('paciente.html', cpf=cpf, dados=dados, imc=imc, classificacao=classificacao, usuario=usuario)
+    return render_template('paciente.html', cpf=cpf, dados=dados, imc=imc, classificacao=classificacao, usuario=usuario, usuario_nome=user['nome'], perfil=user['perfil'])
 
 @app.route("/questionario/<cpf>", methods=["GET", "POST"])
 def questionario(cpf):
-    usuario = request.cookies.get('usuario_logado')
-    if not usuario:
+    user = get_usuario_logado()
+    if not user:
         flash('Faça login primeiro.', 'warning')
         return redirect(url_for('login'))
+    usuario = user['cpf']
 
     dados = questionarios.get(cpf)
     paciente = pacientes.get(cpf)
@@ -446,19 +469,16 @@ def questionario(cpf):
         flash(f"Questionário salvo! Prioridade: {prioridade_final} (automática: {prioridade_auto})", "success")
         return redirect(url_for("questionario", cpf=cpf))
 
-    return render_template("questionario.html", cpf=cpf, dados=dados, idade=idade, paciente=paciente, usuario=usuario)
+    return render_template("questionario.html", cpf=cpf, dados=dados, idade=idade, paciente=paciente, usuario=usuario, usuario_nome=user['nome'], perfil=user['perfil'])
 
-#rota para criar paciente temporario sem cpf
 @app.route('/questionario/sem_cpf')
 def questionario_sem_cpf():
-    usuario = request.cookies.get('usuario_logado')
-    if not usuario:
+    user = get_usuario_logado()
+    if not user:
         flash('Faça login primeiro.', 'warning')
         return redirect(url_for('login'))
-
     import time
     new_cpf = f"cpf temporario-{int(time.time()*1000)}"
-    # cria registro mínimo do paciente para o formulário funcionar
     pacientes[new_cpf] = {
         'nome': '',
         'data_nascimento': None,
@@ -469,18 +489,17 @@ def questionario_sem_cpf():
 
 @app.route('/lista')
 def lista():
-    usuario = request.cookies.get('usuario_logado')
-    if not usuario:
+    user = get_usuario_logado()
+    if not user:
         flash('Faça login primeiro.', 'warning')
         return redirect(url_for('login'))
-
     q = request.args.get('q','').lower().strip()
     lista_pacientes = []
     for cpf, p in pacientes.items():
         nome = (p.get('nome') or '').lower()
         if not q or q in nome or q in cpf:
             lista_pacientes.append({'cpf': cpf, **p})
-    return render_template('lista.html',usuario=usuario ,pacientes=lista_pacientes, q=q)
+    return render_template('lista.html', usuario=user['cpf'], usuario_nome=user['nome'], perfil=user['perfil'], pacientes=lista_pacientes, q=q)
 
 @app.route('/deletar/<cpf>')
 def deletar(cpf):
@@ -519,18 +538,26 @@ def medico_lista():
 
 @app.route('/medico/<cpf>', methods=['GET', 'POST'])
 def medico_paciente(cpf):
-    
+    user = get_usuario_logado()
+    if not user:
+        flash('Faça login primeiro.', 'warning')
+        return redirect(url_for('login'))
+
     if not cpf.startswith("cpf temporario-"):
         cpf = clean_cpf(cpf)
 
-    paciente = pacientes.get(cpf)
-    if not paciente:
+    pac = pacientes.get(cpf)
+    if not pac:
         flash("Paciente não encontrado.", "warning")
         return redirect(url_for('medico_lista'))
 
-    dados = dados_medicos.get(cpf, {"receita": "", "atestado": ""})
+    dados = dados_medicos.get(cpf, {"receita": "", "atestado": "", "medicamentos": []})
 
     if request.method == 'POST':
+        if user['perfil'] != 'medico':
+            flash("Acesso negado. Apenas médicos podem salvar prescrições e atestados.", "warning")
+            return redirect(url_for('medico_paciente', cpf=cpf))
+
         dados['receita'] = request.form.get('receita', '')
         dados['atestado'] = request.form.get('atestado', '')
         dados['nome_medico'] = request.form.get('nome_medico', '')
@@ -540,41 +567,45 @@ def medico_paciente(cpf):
         dados['quantidade'] = request.form.get('quantidade', '')
         dados['observacoes'] = request.form.get('observacoes', '')
         dados['crm'] = request.form.get('crm', '')
-
-        # Atestado
         dados['doenca'] = request.form.get('doenca', '')
         dados['cid'] = request.form.get('cid', '')
         dados['dias_afastamento'] = request.form.get('dias_afastamento', '')
         dados['cidade'] = request.form.get('cidade', '')
-
-        dados['horario'] = datetime.now().strftime('%H:%M')  
+        dados['horario'] = datetime.now().strftime('%H:%M')
         dados['ultima_edicao'] = datetime.now().strftime('%d/%m/%Y %H:%M')
         dados['data_atual'] = datetime.now().strftime('%d/%m/%Y')
 
         nomes = request.form.getlist('medicamentos_nome')
         dosagens = request.form.getlist('medicamentos_dosagem')
         quantidades = request.form.getlist('medicamentos_quantidade')
-
         medicamentos = []
         for n, d, q in zip(nomes, dosagens, quantidades):
-            if n.strip():  # só adiciona se tiver nome
+            if n.strip():
                 medicamentos.append({"nome": n.strip(), "dosagem": d.strip(), "quantidade": q.strip()})
-
         dados['medicamentos'] = medicamentos
-
         dados_medicos[cpf] = dados
-
         flash("Informações médicas salvas com sucesso!", "success")
 
     return render_template(
         'medico_paciente.html',
         cpf=cpf,
-        paciente=paciente,
-        dados=dados
+        paciente=pac,
+        dados=dados,
+        usuario=user['cpf'],
+        usuario_nome=user['nome'],
+        perfil=user['perfil']
     )
 
 @app.route('/pdf/receita/<cpf>')
 def gerar_receita_pdf(cpf):
+    user = get_usuario_logado()
+    if not user:
+        flash('Faça login primeiro.', 'warning')
+        return redirect(url_for('login'))
+    if user['perfil'] != 'medico':
+        flash('Acesso negado. Apenas médicos podem gerar receitas.', 'warning')
+        return redirect(url_for('medico_paciente', cpf=cpf))
+
     if not cpf.startswith("cpf temporario-"):
         cpf = clean_cpf(cpf)
 
@@ -641,8 +672,16 @@ def gerar_receita_pdf(cpf):
 
 @app.route('/pdf/atestado/<cpf>')
 def gerar_atestado_pdf(cpf):
+    user = get_usuario_logado()
+    if not user:
+        flash('Faça login primeiro.', 'warning')
+        return redirect(url_for('login'))
+    if user['perfil'] != 'medico':
+        flash('Acesso negado. Apenas médicos podem gerar atestados.', 'warning')
+        return redirect(url_for('medico_paciente', cpf=cpf))
+
     if not cpf.startswith("cpf temporario-"):
-        cpf = clean_cpf(cpf)    
+        cpf = clean_cpf(cpf)
 
     paciente = pacientes.get(cpf)
     dados = dados_medicos.get(cpf)

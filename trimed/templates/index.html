@@ -1,85 +1,170 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8">
-    <title>Busca/Cadastro de Paciente</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  </head>
-  <body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Triagem e Atendimento - TRIMED</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+  <header>
+    <div class="cabecalho">
+      <a href="{{ url_for('index') }}" class="brand-wrapper">
+        <div class="logo">
+          <img src="{{ url_for('static', filename='logo.png') }}" alt="TRIMED">
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">TRIMED</span>
+          <span class="brand-subtitle">Gestão Clínica</span>
+        </div>
+      </a>
 
-    <header>
-      <div class="cabecalho">
-        <div class="logo">Logo</div>
-        <nav class="menu">
-          <ul>
-            <li><a href="{{ url_for('index') }}"><i class="material-icons">home</i> Início</a></li>
-            <li><a href="{{ url_for('lista') }}"><i class="material-icons">list_alt</i> Lista</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
-
-    {% with mensagens = get_flashed_messages(with_categories=True) %}
-      {% if mensagens %}
-      <div class="rotas">
-        <ul class="flashes">
-          {% for categoria, msg in mensagens %}
-            <li class="flash {{ categoria }}"><strong>{{ categoria }}:</strong> {{ msg }}</li>
-          {% endfor %}
+      <nav class="menu">
+        <ul>
+          <li><a href="{{ url_for('index') }}" class="active"><i class="material-icons">home</i> Início</a></li>
+          <li><a href="{{ url_for('lista') }}"><i class="material-icons">people</i> Pacientes</a></li>
         </ul>
-      </div>
-      {% endif %}
-    {% endwith %}
+      </nav>
 
-  <main class ="conteudo">
-    
-    <div class ="registro">
-      <h3>Busca/Cadastro de Paciente</h3>
+      <div class="topbar-user">
+        <div class="user-chip">
+          <i class="material-icons">badge</i>
+          <span>{{ usuario_nome }}</span>
+        </div>
+        <span class="perfil-badge perfil-{{ perfil }}">{{ 'Médico' if perfil == 'medico' else 'Enfermeiro' }}</span>
+        <a href="{{ url_for('logout') }}" class="btn-logout" title="Encerrar sessão">
+          <i class="material-icons">logout</i> Sair
+        </a>
+      </div>
+    </div>
+  </header>
+
+  {% with mensagens = get_flashed_messages(with_categories=True) %}
+    {% if mensagens %}
+    <div class="rotas">
+      <ul class="flashes">
+        {% for categoria, msg in mensagens %}
+          <li class="flash {{ categoria }}">
+            <i class="material-icons">
+              {% if categoria == 'success' or categoria == 'sucesso' %}check_circle
+              {% elif categoria == 'warning' or categoria == 'aviso' %}warning
+              {% elif categoria == 'Erro' or categoria == 'erro' or categoria == 'error' %}error
+              {% else %}info{% endif %}
+            </i>
+            <span>{{ msg }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="conteudo">
+    <div class="registro">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-header-icon">
+            <i class="material-icons">person_search</i>
+          </div>
+          <div>
+            <h3>Busca e Cadastro de Paciente</h3>
+            <span class="card-header-desc">Informe o CPF para consultar prontuário ou iniciar novo cadastro</span>
+          </div>
+        </div>
+      </div>
+
       <form method="post" novalidate>
         <div class="bloco-cpf">
-          <label for="cpf">CPF:</label>
+          <label for="cpf">CPF do Paciente:</label>
           <input type="text" name="cpf" id="cpf" required maxlength="14" placeholder="000.000.000-00" pattern="[\d\.\-]+" autofocus>
         </div>
         <div class="bloco-botao">
-          <button type="submit" class="botao">Buscar/Cadastrar</button>
+          <button type="submit" class="botao">
+            <i class="material-icons">search</i> Buscar / Cadastrar
+          </button>
+          <a href="{{ url_for('questionario_sem_cpf') }}" class="botao-secundario">
+            <i class="material-icons">person_add_alt</i> Atendimento sem CPF
+          </a>
         </div>
       </form>
     </div>
 
     <div class="lista-urgencia">
+      <div class="card-header">
+        <div class="card-header-left">
+          <div class="card-header-icon">
+            <i class="material-icons">format_list_numbered</i>
+          </div>
+          <div>
+            <h3>Fila de Triagem e Urgência</h3>
+            <span class="card-header-desc">Ordem de atendimento baseada no protocolo de classificação clínica</span>
+          </div>
+        </div>
+      </div>
+
       {% if triagem %}
-        <h3>Ordem de Atendimento</h3>
         <div class="tabela">
           <table>
             <thead>
               <tr>
                 <th>CPF</th>
-                <th>Nome</th>
-                <th>Prioridade</th>
+                <th>Nome do Paciente</th>
+                <th>Classificação de Risco</th>
+                <th style="text-align: right;">Ações</th>
               </tr>
             </thead>
             <tbody>
               {% for p in triagem %}
                 <tr>
-                  <td>{{ p.cpf }}</td>
-                  <td>{{ p.nome }}</td>
-                  <td class="prioridade prioridade-{{ p.prioridade|lower|replace(' ', '-') }}">{{ p.prioridade }}</td>
+                  <td class="cell-cpf">{{ p.cpf | format_cpf }}</td>
+                  <td class="cell-nome">{{ p.nome }}</td>
+                  <td>
+                    <span class="prioridade prioridade-{{ p.prioridade|lower|replace(' ', '-') }}">
+                      {{ p.prioridade }}
+                    </span>
+                  </td>
+                  <td style="text-align: right;">
+                    <div class="acoes-grupo" style="justify-content: flex-end;">
+                      <a href="{{ url_for('questionario', cpf=p.cpf) }}" class="btn-acao">
+                        <i class="material-icons">assignment</i> Triagem
+                      </a>
+                      <a href="{{ url_for('medico_paciente', cpf=p.cpf) }}" class="btn-acao">
+                        <i class="material-icons">medical_services</i> Atendimento
+                      </a>
+                    </div>
+                  </td>
                 </tr>
               {% endfor %}
             </tbody>
           </table>
-        {% else %}
-          <p>Nenhum paciente em triagem no momento.</p>
-        {% endif %}
         </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="material-icons">checklist</i>
+          </div>
+          <p>Nenhum paciente classificado em triagem no momento.</p>
+          <span style="font-size: 0.85rem; color: var(--slate-400);">Cadastre um paciente ou acesse a lista geral para iniciar a triagem.</span>
+        </div>
+      {% endif %}
     </div>
 
     <div class="fim">
-      <p>Usuário logado: {{ usuario | format_cpf}}</p>
-      <a href="{{ url_for('logout') }}" class="botao">Sair</a>
-      <a href="{{ url_for('lista') }}" class="botao">Lista de Pacientes</a>
+      <div class="fim-left">
+        <span style="font-size: 0.88rem; color: var(--slate-500);">
+          Sessão ativa: <strong>{{ usuario_nome }}</strong>
+        </span>
+      </div>
+      <div class="fim-right">
+        <a href="{{ url_for('lista') }}" class="botao-secundario">
+          <i class="material-icons">list_alt</i> Lista Geral de Pacientes
+        </a>
+        <a href="{{ url_for('logout') }}" class="botao-secundario" style="color: var(--danger); border-color: var(--danger-border);">
+          <i class="material-icons">logout</i> Encerrar Sessão
+        </a>
+      </div>
     </div>
-
+  </main>
 </body>
 </html>

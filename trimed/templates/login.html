@@ -3,73 +3,75 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Login - Triagem</title>
+	<title>Login - TRIMED</title>
 	<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body class="pagina-login">
 	<div class="bloco-login">
-		<div class="lado-esquerdo">
-			<img src="{{ url_for('static', filename='imagens/login-illustration.png') }}" class="ilustracao" alt="Ilustração de login">
-		</div>
-
-		<div class="lado-direito">
-			<div class="caixa-login">
-				<h1>TRIMED</h1>
-				<h2 class="subtitulo">Bem-vindo!</h2>
-				<p class="informacao">Acesse sua conta para continuar</p>
-
-		{% with mensagens = get_flashed_messages(with_categories=True) %}
-			{% if mensagens %}
-			<ul class="flashes">
-				{% for categoria, msg in mensagens %}
-					<li class="flash {{ categoria }}">{{ msg }}</li>
-				{% endfor %}
-			</ul>
-			{% endif %}
-		{% endwith %}
-
-		<form method="post" novalidate>
-			<label for="cpf">CPF</label>
-			<input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="11" inputmode="numeric" title="Digite o CPF">
-
-			<label for="senha">Senha</label>
-				<div class="campo-senha">
-					<input id="senha" name="senha" type="password" placeholder="Senha" required>
-					<button type="button" class="mostrar-senha" onclick="togglePassword()">
-						<img id="olho" 
-							src="https://cdn-icons-png.flaticon.com/512/2767/2767146.png" 
-							alt="Mostrar senha" 
-							class="olho">
-					</button>
-				</div>			
-			<button type="submit" class="botao-login">Entrar</button>
-		</form>
-				<footer>
-					© 2025 <strong>TRIMED</strong> — Todos os direitos reservados
-				</footer>
+		<div class="caixa-login">
+			<div class="login-brand">
+				<div class="login-logo">
+					<img src="{{ url_for('static', filename='logo.png') }}" alt="TRIMED Logo">
+				</div>
+				<div>
+					<h1>TRIMED</h1>
+					<span>Gestão Clínica & Triagem</span>
+				</div>
 			</div>
-        </div>
-    </div>
-    <script>
-        function togglePassword() {
-        const senhaInput = document.getElementById('senha');
-        const eyeIcon = document.getElementById('eyeIcon');
-        const isPassword = senhaInput.type === 'password';
 
-        // URLs de ícones de olho mais claros (olho cortado e olho aberto)
-        const ICON_OPEN = 'https://cdn-icons-png.flaticon.com/512/2767/2767185.png'; // Olho aberto
-        const ICON_CLOSED = 'https://cdn-icons-png.flaticon.com/512/2767/2767146.png'; // Olho cortado
+			<h2 class="subtitulo">Acesso ao Sistema</h2>
+			<p class="informacao">Informe seu CPF e senha para continuar</p>
 
-        senhaInput.type = isPassword ? 'text' : 'password';
-        
-        // Troca as fontes
-        eyeIcon.src = isPassword
-        ? ICON_OPEN // Se o input era 'password' (vai mudar para 'text'), mostra olho aberto
-        : ICON_CLOSED; // Se o input era 'text' (vai mudar para 'password'), mostra olho cortado
-        
-        // Atualiza o alt para acessibilidade
-        eyeIcon.alt = isPassword ? 'Ocultar senha' : 'Mostrar senha';
-        }
-    </script>		
+			{% with mensagens = get_flashed_messages(with_categories=True) %}
+				{% if mensagens %}
+				<ul class="flashes">
+					{% for categoria, msg in mensagens %}
+						<li class="flash {{ categoria }}">
+							<i class="material-icons">info</i>
+							<span>{{ msg }}</span>
+						</li>
+					{% endfor %}
+				</ul>
+				{% endif %}
+			{% endwith %}
+
+			<form method="post" novalidate>
+				<div class="campo">
+					<label for="cpf">CPF do Profissional</label>
+					<input id="cpf" name="cpf" type="text" placeholder="000.000.000-00" required maxlength="14" inputmode="numeric" title="Digite o CPF" autofocus>
+				</div>
+
+				<div class="campo" style="margin-top: 14px;">
+					<label for="senha">Senha de Acesso</label>
+					<div class="campo-senha">
+						<input id="senha" name="senha" type="password" placeholder="Sua senha" required>
+						<button id="botao-senha" type="button" class="mostrar-senha" onclick="togglePassword()" aria-pressed="false" aria-label="Mostrar senha" title="Mostrar senha">
+							<i id="olho" class="material-icons olho" aria-hidden="true">visibility_off</i>
+						</button>
+					</div>
+				</div>
+
+				<button type="submit" class="botao-login" style="margin-top: 20px;">Entrar no Sistema</button>
+			</form>
+
+			<p class="login-copyright">© 2025 TRIMED — Todos os direitos reservados</p>
+		</div>
+	</div>
+
+	<script>
+		function togglePassword() {
+			const senhaInput = document.getElementById('senha');
+			const olho = document.getElementById('olho');
+			const button = document.getElementById('botao-senha');
+			const isPassword = senhaInput.type === 'password';
+
+			senhaInput.type = isPassword ? 'text' : 'password';
+			olho.textContent = isPassword ? 'visibility' : 'visibility_off';
+			button.setAttribute('aria-pressed', String(isPassword));
+			button.setAttribute('aria-label', isPassword ? 'Ocultar senha' : 'Mostrar senha');
+			button.title = isPassword ? 'Ocultar senha' : 'Mostrar senha';
+		}
+	</script>
 </body>
 </html>
