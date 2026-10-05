@@ -17,4 +17,7 @@ Mas como "commitar"?
 
 4. Para enviar o commit, digite: git push -u origin nome-que-vc-quiser
 
+Por último, para instalar todas as dependências do projeto, execute o comando: 
+pip install -r requirements.txt
+
 Pronto. Qualquer dúvida, fale comigo (Heitor)
